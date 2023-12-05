@@ -1,2 +1,2 @@
-# galvan-marc-projet-6-java
-Repository pour le projet Pay My Buddy
+# Pay My Buddy
+Repository pour le projet 6 de la formation développeur d'application Java

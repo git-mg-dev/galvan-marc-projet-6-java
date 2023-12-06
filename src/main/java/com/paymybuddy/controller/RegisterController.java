@@ -42,8 +42,6 @@ public class RegisterController {
 
                 if (newUserAccount != null) {
                     securityService.autoLogin(registerInfo.getEmail(), registerInfo.getPassword());
-                    //RedirectView redirectView = new RedirectView("/"); //TODO: redirect doesn't work
-
                     return "/";
                 } else {
                     //TODO: user account creation failed

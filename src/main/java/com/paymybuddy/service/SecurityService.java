@@ -12,13 +12,17 @@ public class SecurityService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public void  autoLogin(String email, String password) {
+    public void autoLogin(String email, String password) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(token);
 
         if(authentication.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+    }
+
+    public Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
 }

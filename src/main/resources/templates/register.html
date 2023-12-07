@@ -17,7 +17,7 @@
         <div class="card-body">
 
     <form action="#" method="post" th:action="@{/register}" th:object="${registerInfo}">
-        <div class="form-group mb-3 alert alert-danger">
+        <div th:if="${#fields.hasErrors('global')}" class="form-group mb-3 alert alert-danger">
             <span th:errors="*{global}">Global errors</span>
         </div>
         <div class="form-group mb-3">

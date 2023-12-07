@@ -32,6 +32,9 @@ public class Operation {
     @Enumerated(EnumType.STRING)
     private OperationStatus status;
 
+    public Operation() {
+    }
+
     public int getId() {
         return id;
     }

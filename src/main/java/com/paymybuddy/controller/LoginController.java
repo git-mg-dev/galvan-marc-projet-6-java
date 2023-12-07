@@ -1,11 +1,9 @@
 package com.paymybuddy.controller;
 
 import com.paymybuddy.model.*;
-import com.paymybuddy.service.SecurityService;
 import com.paymybuddy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -34,14 +32,7 @@ public class LoginController {
         return "/login";
     }
 
-    //TODO: mettre remember me
-
-    /*@GetMapping("/login-error")
-    public String displayLoginFormWithError(Model model) {
-        model.addAttribute("userAccount", new UserAccount());
-        model.addAttribute("loginError", true);
-        return "/login";
-    }*/
+    //TODO: ajouter remember me
 
     @GetMapping("/*")
     public String getUserInfo(Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
@@ -101,46 +92,6 @@ public class LoginController {
         if(token.isAuthenticated()) {
             User u = (User) token.getPrincipal();
             return userService.findUserByEmail(u.getUsername());
-            /*if(userAccount != null) {
-                userInfo.append("Welcome, ").append(userAccount.getFirstName());
-                if(!userAccount.getContacts().isEmpty()) {
-                    userInfo.append("<ul>");
-                    for(Contact contact : userAccount.getContacts()) {
-                        userInfo.append("<li>")
-                                .append(contact.getFirstName())
-                                .append(" ")
-                                .append(contact.getLastName())
-                                .append(" ")
-                                .append(contact.getEmail())
-                                .append("</li>");
-                    }
-                    userInfo.append("</ul>");
-                }
-                else {
-                    userInfo.append("<br>No contact");
-                }
-
-                if (!userAccount.getOperations().isEmpty()) {
-                    userInfo.append("<ul>");
-                    for(Operation operation : userAccount.getOperations()) {
-                        userInfo.append("<li>")
-                                .append(operation.getRecipientId())
-                                .append(" ")
-                                .append(operation.getDescription())
-                                .append(" ")
-                                .append(operation.getAmount())
-                                .append(" ")
-                                .append(operation.getOperationDate())
-                                .append("</li>");
-                    }
-                    userInfo.append("</ul>");
-                }
-                else {
-                    userInfo.append("<br>No operation");
-                }
-            } else {
-                userInfo.append("Welcome, ").append(u.getUsername());
-            }*/
         } else {
             return null;
         }

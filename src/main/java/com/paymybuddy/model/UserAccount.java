@@ -3,6 +3,7 @@ package com.paymybuddy.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class UserAccount {
     //TODO: faire une autre liste avec les opérations dont le user est destinataire ?
 
     @OneToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
     @JoinTable(
@@ -54,6 +55,8 @@ public class UserAccount {
     private List<Contact> contacts;
 
     public UserAccount() {
+        operations = new ArrayList<>();
+        contacts = new ArrayList<>();
     }
 
     public UserAccount(RegisterInfo registerInfo, boolean openidconnectUser) {

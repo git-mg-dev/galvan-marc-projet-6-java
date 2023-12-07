@@ -15,6 +15,16 @@ public class Contact {
     @Column(name = "email")
     private String email;
 
+    public Contact() {
+    }
+
+    public Contact(UserAccount userAccount) {
+        this.id = userAccount.getId();
+        this.firstName = userAccount.getFirstName();
+        this.lastName = userAccount.getLastName();
+        this.email = userAccount.getEmail();
+    }
+
     public int getId() {
         return id;
     }

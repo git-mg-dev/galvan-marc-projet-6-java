@@ -1,12 +1,13 @@
 package com.paymybuddy.service;
 
 import com.paymybuddy.exceptions.UserAlreadyExistException;
-import com.paymybuddy.model.RegisterInfo;
-import com.paymybuddy.model.UserAccount;
+import com.paymybuddy.model.*;
 import com.paymybuddy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class UserService {
@@ -35,5 +36,4 @@ public class UserService {
     private void encodePassword(UserAccount userAccount, RegisterInfo registerInfo){
         userAccount.setPassword(passwordEncoder.encode(registerInfo.getPassword()));
     }
-
 }

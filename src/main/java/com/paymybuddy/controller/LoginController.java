@@ -1,5 +1,6 @@
 package com.paymybuddy.controller;
 
+import com.paymybuddy.exceptions.InvalidRegisterInformation;
 import com.paymybuddy.model.*;
 import com.paymybuddy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +72,12 @@ public class LoginController {
                     String lastName = oidcUser.getAttribute("family_name");
                     String password = oidcUser.getIdToken().getTokenValue();
 
-                    RegisterInfo registerInfo = new RegisterInfo(email, firstName, lastName, password, password);
-                    return userService.registerNewUserAccount(registerInfo, true);
-
+                    try {
+                        RegisterInfo registerInfo = new RegisterInfo(email, firstName, lastName, password, password);
+                        return userService.registerNewUserAccount(registerInfo, true);
+                    } catch (InvalidRegisterInformation e) {
+                        return null;
+                    }
                 } else {
                     //User already registered
                     return userService.findUserByEmail(email);

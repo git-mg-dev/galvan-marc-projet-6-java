@@ -1,5 +1,6 @@
 package com.paymybuddy.controller;
 
+import com.paymybuddy.exceptions.InvalidRegisterInformation;
 import com.paymybuddy.exceptions.UserAlreadyExistException;
 import com.paymybuddy.model.RegisterInfo;
 import com.paymybuddy.model.UserAccount;
@@ -45,6 +46,10 @@ public class RegisterController {
                 }
             } catch (UserAlreadyExistException userAlreadyExistException) {
                 //TODO: error message, An account with that email already exists + link to /login
+                model.addAttribute("registerForm", registerInfo);
+                return "/register";
+            } catch (InvalidRegisterInformation e) {
+                //TODO: add error message to global error
                 model.addAttribute("registerForm", registerInfo);
                 return "/register";
             }

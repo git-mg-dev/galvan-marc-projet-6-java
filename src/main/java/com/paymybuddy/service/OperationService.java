@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Date;
 
@@ -22,24 +24,63 @@ public class OperationService {
     @Autowired
     private OperationRepository operationRepository;
 
+    @Transactional(rollbackFor = OperationFailedException.class)
     public UserAccount makeDeposit(UserAccount userAccount, float deposit) throws OperationFailedException {
-        if(userAccount != null && deposit > 0 && userAccount.getStatus() != UserStatus.DISABLED) {
+        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && deposit > 0) {
             float chargedAmount = getChargedAmount(deposit);
-            Operation operation = new Operation();
-            operation.setAmount(deposit);
-            operation.setDescription("Test deposit");
-            operation.setOperationDate(new Date());
-            operation.setOperationType(OperationType.DEPOSIT);
-            operation.setChargedAmount(chargedAmount);
-            operation.setSenderId(userAccount.getId());
-            operation.setRecipientId(userAccount.getId());
+
+            //Charged amount is taken from the balance
+            Operation operation = new Operation(new Date(), OperationType.DEPOSIT,
+                    "Deposit", deposit, chargedAmount, userAccount.getId(),
+                    userAccount.getId(), OperationStatus.PROCESSING);
 
             userAccount.setAccountBalance(userAccount.getAccountBalance() + deposit - chargedAmount);
             userAccount.getOperations().add(operation);
 
-            return userRepository.save(userAccount);
+            UserAccount savedUser = userRepository.save(userAccount);
+
+            if(savedUser != null) {
+                operation = savedUser.getOperations().get(savedUser.getOperations().size()-1);
+                updateOperationStatus(operation, OperationStatus.SUCCEEDED);
+
+                return savedUser;
+            } else {
+                throw new OperationFailedException("Deposit for " + userAccount.getEmail() + " failed");
+            }
         } else {
             throw new OperationFailedException("Invalid user information or deposit amount");
+        }
+    }
+
+    @Transactional(rollbackFor = OperationFailedException.class)
+    public UserAccount makeTransfer(UserAccount userAccount, float transferAmount, String iban) throws OperationFailedException {
+        float chargedAmount = getChargedAmount(transferAmount);
+
+        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && !iban.isEmpty() &&
+                transferAmount > 0 && transferAmount + chargedAmount <= userAccount.getAccountBalance()) {
+
+            //Charged amount is taken from the transfer amount
+            Operation operation = new Operation(new Date(), OperationType.TRANSFER,
+                    "Transfer", transferAmount - chargedAmount, chargedAmount,
+                    userAccount.getId(), userAccount.getId(), OperationStatus.PROCESSING);
+            operation.setIban(iban);
+
+            userAccount.setAccountBalance(userAccount.getAccountBalance() - transferAmount - chargedAmount);
+            userAccount.getOperations().add(operation);
+
+            UserAccount savedUser = userRepository.save(userAccount);
+
+            if(savedUser != null) {
+                operation = savedUser.getOperations().get(savedUser.getOperations().size()-1);
+                updateOperationStatus(operation, OperationStatus.SUCCEEDED);
+
+                return savedUser;
+            } else {
+                throw new OperationFailedException("Transfer for " + userAccount.getEmail() + " failed");
+            }
+
+        } else {
+            throw new OperationFailedException("Invalid user information or transfer amount");
         }
     }
 
@@ -51,16 +92,10 @@ public class OperationService {
 
             if (recipient != null && recipient.getStatus() == UserStatus.ENABLED) {
                 float chargedAmount = getChargedAmount(paymentAmount);
-                Date operationDate = new Date();
-                Operation operation = new Operation();
-                operation.setAmount(paymentAmount);
-                operation.setDescription(description);
-                operation.setOperationDate(operationDate);
-                operation.setOperationType(OperationType.PAYMENT);
-                operation.setChargedAmount(chargedAmount);
-                operation.setSenderId(sender.getId());
-                operation.setRecipientId(recipient.getId());
-                operation.setStatus(OperationStatus.PROCESSING);
+
+                //Charged amount is taken from the balance of the sender
+                Operation operation = new Operation(new Date(), OperationType.PAYMENT, description,
+                        paymentAmount, chargedAmount, sender.getId(), recipient.getId(), OperationStatus.PROCESSING);
 
                 sender.setAccountBalance(sender.getAccountBalance() - paymentAmount - chargedAmount);
                 sender.getOperations().add(operation);
@@ -71,8 +106,7 @@ public class OperationService {
 
                 if(savedRecipient != null) {
                     operation = savedSender.getOperations().get(savedSender.getOperations().size()-1);
-                    operation.setStatus(OperationStatus.SUCCEEDED);
-                    operationRepository.save(operation);
+                    updateOperationStatus(operation, OperationStatus.SUCCEEDED);
 
                     return savedSender;
 
@@ -88,8 +122,15 @@ public class OperationService {
         }
     }
 
-    private float getChargedAmount(float operationAmount) {
-        return operationAmount * 0.005f;
+    public float getChargedAmount(float operationAmount) {
+        BigDecimal bigDecimal = new BigDecimal(Float.toString(operationAmount * 0.005f));
+        bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
+
+        return bigDecimal.floatValue();
     }
 
+    private void updateOperationStatus(Operation operation, OperationStatus operationStatus) {
+        operation.setStatus(operationStatus);
+        operationRepository.save(operation);
+    }
 }

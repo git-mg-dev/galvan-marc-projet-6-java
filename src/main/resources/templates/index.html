@@ -10,7 +10,7 @@
 <div class="container">
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/index}">Pay My Buddy</a>
+            <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -23,13 +23,13 @@
                         <a class="nav-link active" aria-current="page" th:href="@{/index}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/transfer}">Transfer</a>
+                        <a class="nav-link" th:href="@{/transfer}">Transfer</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
+                        <a class="nav-link" th:href="@{/profile}">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/contact}">Contact</a>
+                        <a class="nav-link" th:href="@{/contact}">Contact</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" th:href="@{/logout}">Logout</a>
@@ -53,6 +53,20 @@
         <br><br>
         <div class="row">
             <h2>Account balance: <span th:text="${balance}">146.23€</span></h2>
+        </div>
+        <br><br>
+        <div>
+            <p><a href="/templates/send.html" class="btn btn-success btn-lg">Pay My Buddy!</a></p>
+            <p>TODO: disable if balance = 0</p>
+        </div>
+        <br><br>
+        <div class="row">
+            <a class="btn btn-primary" href="/deposit.html">Add money to balance</a>
+        </div>
+        <br><br>
+        <div class="row">
+            <a class="btn btn-outline-primary" href="/transfer.html">Transfer money to bank account</a>
+            <span>TODO: if balance > 0</span>
         </div>
     </div>
 </div>

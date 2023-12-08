@@ -35,6 +35,17 @@ public class Operation {
     public Operation() {
     }
 
+    public Operation(Date operationDate, OperationType operationType, String description, float amount, float chargedAmount, int senderId, int recipientId, OperationStatus status) {
+        this.operationDate = operationDate;
+        this.operationType = operationType;
+        this.description = description;
+        this.amount = amount;
+        this.chargedAmount = chargedAmount;
+        this.senderId = senderId;
+        this.recipientId = recipientId;
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }

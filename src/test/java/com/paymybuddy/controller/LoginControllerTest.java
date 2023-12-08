@@ -1,14 +1,16 @@
-package com.paymybuddy;
+package com.paymybuddy.controller;
 
-import com.paymybuddy.exceptions.OperationFailedException;
-import com.paymybuddy.model.Contact;
+import com.paymybuddy.exceptions.InvalidRegisterInformation;
+import com.paymybuddy.exceptions.NullUserException;
+import com.paymybuddy.exceptions.UserAlreadyExistException;
+import com.paymybuddy.exceptions.UserNotFountException;
+import com.paymybuddy.model.RegisterInfo;
 import com.paymybuddy.model.UserAccount;
 import com.paymybuddy.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,36 +22,9 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "/test.properties")
-public class UserServiceTest {
-    @Autowired
-    private UserService userService;
+public class LoginControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @Test
-    public void findUserByEmailTest_WithExistingEmail_OK() {
-        // GIVEN
-        String email = "pauline.test@mail.com";
-
-        // WHEN
-        UserAccount userAccount = userService.findUserByEmail(email);
-
-        // THEN
-        assertNotNull(userAccount);
-    }
-
-    //find fail
-    @Test
-    public void findUserByEmailTest_WithNonExistingEmail_Fail() {
-        // GIVEN
-        String email = "paul.test@mail.com";
-
-        // WHEN
-        UserAccount userAccount = userService.findUserByEmail(email);
-
-        // THEN
-        assertNull(userAccount);
-    }
 
     @Test
     public void userLoginTest_WithValidUser_OK() throws Exception {
@@ -107,13 +82,7 @@ public class UserServiceTest {
 
     //TODO:
     //OpenIdConnect login fail
-    //Register new user (email/password)
-    //Register new user (email/password) fail
-    //Register new user OpenIdConnect
-    //Register new user OpenIdConnect fail
     //Logout
     //Logout fail
 
-    //Update user info
-    //Update user info fail
 }

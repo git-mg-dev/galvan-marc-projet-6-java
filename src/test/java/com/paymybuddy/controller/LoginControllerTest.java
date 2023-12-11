@@ -1,23 +1,19 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.exceptions.InvalidRegisterInformation;
-import com.paymybuddy.exceptions.NullUserException;
-import com.paymybuddy.exceptions.UserAlreadyExistException;
-import com.paymybuddy.exceptions.UserNotFountException;
-import com.paymybuddy.model.RegisterInfo;
-import com.paymybuddy.model.UserAccount;
-import com.paymybuddy.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -45,44 +41,27 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void userLoginTest_WithOpenIdConnectEmail() throws Exception {
+    public void userLoginTest_WithOpenIdConnectEmail_Fail() throws Exception {
         mockMvc.perform(formLogin("/login").user("openid.connect@gmail.com").password("password"))
                 .andExpect(unauthenticated());
     }
 
-
-    //OpenIdConnect login
-    /*@Test
-    public void openIdConnectLoginTest() throws Exception {
-        OAuth2User principal = createOAuth2User("Oidc User", "openid.connect@gmail.com");
-
+    @Test
+    public void userLoginTest_WithOpenIdConnectToken_OK() throws Exception {
         mockMvc.perform(get("/")
-                        .with((RequestPostProcessor)authentication(getOauthAuthenticationFor(principal))))
+                        .with(oidcLogin()
+                                .idToken(token -> token.claim("email", "openid.connect@gmail.com"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_ENABLED"))))
                 .andExpect(status().isOk());
     }
 
-    private static OAuth2User createOAuth2User(String name, String email) {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_ENABLED"));
-
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("sub", "1234567890");
-        attributes.put("name", name);
-        attributes.put("email", email);
-
-        return new DefaultOAuth2User(authorities, attributes, "sub");
+    @Test
+    public void userLoginTest_WithOpenIdConnectTokenDisabled_Fail() throws Exception {
+        mockMvc.perform(get("/")
+                        .with(oidcLogin()
+                                .idToken(token -> token.claim("email", "openid.disabled@gmail.com"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_DISABLED"))))
+                .andExpect(status().is3xxRedirection());
     }
-
-    private static Authentication getOauthAuthenticationFor(OAuth2User principal) {
-        Collection<? extends GrantedAuthority> authorities = principal.getAuthorities();
-        String authorizedClientRegistrationId = "my-oauth-client";
-
-        return new OAuth2AuthenticationToken(principal, authorities, authorizedClientRegistrationId);
-    }*/
-
-    //TODO:
-    //OpenIdConnect login fail
-    //Logout
-    //Logout fail
 
 }

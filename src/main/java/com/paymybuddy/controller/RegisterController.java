@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -38,19 +39,23 @@ public class RegisterController {
 
                 if (newUserAccount != null) {
                     securityService.autoLogin(registerInfo.getEmail(), registerInfo.getPassword());
-                    return "/";
+                    model.addAttribute("firstName", newUserAccount.getFirstName());
+                    model.addAttribute("balance", newUserAccount.getAccountBalance()+"€");
+                    return "/index";
                 } else {
-                    //TODO: user account creation failed
                     model.addAttribute("registerForm", registerInfo);
+                    bindingResult.addError(new ObjectError("global", "User account creation failed, please try again."));
                     return "/register";
                 }
             } catch (UserAlreadyExistException userAlreadyExistException) {
-                //TODO: error message, An account with that email already exists + link to /login
                 model.addAttribute("registerForm", registerInfo);
+                ObjectError error = new ObjectError("global", "An account with that email already exists, please log in.");
+                bindingResult.addError(error);
                 return "/register";
             } catch (InvalidRegisterInformation e) {
-                //TODO: add error message to global error
                 model.addAttribute("registerForm", registerInfo);
+                ObjectError error = new ObjectError("global", "Invalid information, please correct your information.");
+                bindingResult.addError(error);
                 return "/register";
             }
         } else {

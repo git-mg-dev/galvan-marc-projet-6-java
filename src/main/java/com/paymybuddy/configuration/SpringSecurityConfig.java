@@ -31,7 +31,7 @@ public class SpringSecurityConfig {
                         .failureUrl("/login?error")
                         .permitAll()
                 )
-                //.rememberMe(Customizer.withDefaults())
+                .rememberMe(Customizer.withDefaults())
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .defaultSuccessUrl("/")

@@ -25,7 +25,7 @@ public class OperationServiceTest {
     private UserService userService;
 
     @BeforeAll
-    @Sql("/reinit_db.sql")
+    @Sql("/init_db.sql")
     public static void reinitDB() {
         // script executed by @Sql
     }

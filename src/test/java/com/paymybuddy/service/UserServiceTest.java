@@ -24,7 +24,7 @@ public class UserServiceTest {
     private MockMvc mockMvc;
 
     @BeforeAll
-    @Sql("/reinit_db.sql")
+    @Sql("/init_db.sql")
     public static void setDataBase() {
         // script executed by @Sql
     }

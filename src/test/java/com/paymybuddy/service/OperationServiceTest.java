@@ -4,6 +4,7 @@ import com.paymybuddy.exceptions.NullUserException;
 import com.paymybuddy.exceptions.OperationFailedException;
 import com.paymybuddy.exceptions.PaymentFailedException;
 import com.paymybuddy.exceptions.UserNotFountException;
+import com.paymybuddy.model.PaymentInfo;
 import com.paymybuddy.model.UserAccount;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -63,13 +64,13 @@ public class OperationServiceTest {
         UserAccount recipient = userService.findUserByEmail("jrocher@mail.com");
         float paymentAmount = 15.0f;
         float chargedAmount = operationService.getChargedAmount(paymentAmount);
-        String description = "Restaurant";
+        PaymentInfo paymentInfo = new PaymentInfo(recipient.getId(), "Restaurant", (int)paymentAmount);
 
         float senderBalanceBeforePayment = sender.getAccountBalance();
         float recipientBalanceBeforePayment = recipient.getAccountBalance();
 
         // WHEN
-        UserAccount saveSender = operationService.sendPayment(sender, recipient.getEmail(), paymentAmount, description);
+        UserAccount saveSender = operationService.sendPayment(sender, paymentInfo);
         UserAccount saveRecipient = userService.findUserByEmail("jrocher@mail.com");
 
         // THEN
@@ -80,19 +81,21 @@ public class OperationServiceTest {
 
     @Test
     public void paymentTest_NullSender_Fail() {
+        // GIVEN
+        PaymentInfo paymentInfo = new PaymentInfo(0, "whatever", 0);
+
         // WHEN & THEN
-        assertThrows(NullUserException.class, () -> operationService.sendPayment(null, "whatever",
-                0.00f, "whatever"));
+        assertThrows(NullUserException.class, () -> operationService.sendPayment(null, paymentInfo));
     }
 
     @Test
     public void paymentTest_InvalidRecipient_Fail() {
         // GIVEN
         UserAccount sender = userService.findUserByEmail("pauline.test@mail.com");
+        PaymentInfo paymentInfo = new PaymentInfo(3, "whatever", 1);
 
         // WHEN & THEN
-        assertThrows(UserNotFountException.class, () -> operationService.sendPayment(sender, "mr@mail.com",
-                0.00f, "whatever"));
+        assertThrows(UserNotFountException.class, () -> operationService.sendPayment(sender, paymentInfo));
     }
 
     @Test

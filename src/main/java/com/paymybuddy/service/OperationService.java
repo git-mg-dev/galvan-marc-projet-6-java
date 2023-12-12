@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -85,21 +85,27 @@ public class OperationService {
     }
 
     @Transactional(rollbackFor = PaymentFailedException.class)
-    public UserAccount sendPayment(UserAccount sender, String recipientEmail, float paymentAmount, String description)
+    public UserAccount sendPayment(UserAccount sender, PaymentInfo paymentInfo)
             throws NullUserException, UserNotFountException, PaymentFailedException {
-        if(sender != null) {
-            UserAccount recipient = userRepository.findByEmail(recipientEmail);
+        if(sender != null && paymentInfo.getAmount() > 0) {
+            Optional<UserAccount> optionalRecipient = userRepository.findById(paymentInfo.getRecipientId());
+            UserAccount recipient = null;
+            if(optionalRecipient.isPresent()) {
+                recipient = optionalRecipient.get();
+            }
+
+            float paymentAmountFloat = getFloatFromInt(paymentInfo.getAmount());
 
             if (recipient != null && recipient.getStatus() == UserStatus.ENABLED) {
-                float chargedAmount = getChargedAmount(paymentAmount);
+                float chargedAmount = getChargedAmount(paymentInfo.getAmount());
 
                 //Charged amount is taken from the balance of the sender
-                Operation operation = new Operation(new Date(), OperationType.PAYMENT, description,
-                        paymentAmount, chargedAmount, sender.getId(), recipient.getId(), OperationStatus.PROCESSING);
+                Operation operation = new Operation(new Date(), OperationType.PAYMENT, paymentInfo.getDescription(),
+                        paymentAmountFloat, chargedAmount, sender.getId(), recipient.getId(), OperationStatus.PROCESSING);
 
-                sender.setAccountBalance(sender.getAccountBalance() - paymentAmount - chargedAmount);
+                sender.setAccountBalance(sender.getAccountBalance() - paymentAmountFloat - chargedAmount);
                 sender.getOperations().add(operation);
-                recipient.setAccountBalance(recipient.getAccountBalance() + paymentAmount);
+                recipient.setAccountBalance(recipient.getAccountBalance() + paymentAmountFloat);
 
                 UserAccount savedSender = userRepository.save(sender);
                 UserAccount savedRecipient = userRepository.save(recipient);
@@ -111,8 +117,9 @@ public class OperationService {
                     return savedSender;
 
                 } else {
-                    throw new PaymentFailedException("Payment failed from " + sender.getEmail() + " to " +
-                            recipientEmail + " (" + description + ": " + paymentAmount + "€)");
+                    throw new PaymentFailedException("Payment failed from " + sender.getEmail() + " to user with id " +
+                            paymentInfo.getRecipientId() + " (" + paymentInfo.getDescription() + ": " +
+                            paymentInfo.getAmount() + "€)");
                 }
             } else {
                 throw new UserNotFountException("No user was found with this email");
@@ -132,5 +139,10 @@ public class OperationService {
     private void updateOperationStatus(Operation operation, OperationStatus operationStatus) {
         operation.setStatus(operationStatus);
         operationRepository.save(operation);
+    }
+
+    private float getFloatFromInt(int value) {
+        Integer integer = (Integer) value;
+        return integer.floatValue();
     }
 }

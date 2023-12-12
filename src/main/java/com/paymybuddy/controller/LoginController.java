@@ -29,7 +29,7 @@ public class LoginController {
         return "/login";
     }
 
-    @GetMapping("/")
+    @GetMapping("/*")
     public String getUserInfo(Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
 
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);

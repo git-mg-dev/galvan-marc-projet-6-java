@@ -29,7 +29,7 @@ public class ContactService {
      * @throws ContactAlreadyExistsException user already have this email in their contact list
      */
     public UserAccount addContact(UserAccount userAccount, String emailContact) throws UserNotFountException, NullUserException, ContactAlreadyExistsException {
-        if(userAccount != null) {
+        if(userAccount != null && !userAccount.getEmail().equals(emailContact)) {
             UserAccount contactUser = userRepository.findByEmail(emailContact);
 
             if (contactUser != null && contactUser.getStatus() == UserStatus.ENABLED) {
@@ -54,21 +54,21 @@ public class ContactService {
     /**
      * Removes a contact to a user contact list
      * @param userAccount user to remove contact to
-     * @param email email of the contact to be removed
+     * @param idContact id of the contact to be removed
      * @return user with updated contact list
      * @throws UserNotFountException wrong contact email: user with this email doesn't exist or their
      * account is disabled
      * @throws NullUserException user is null
      */
-    public UserAccount removeContact(UserAccount userAccount, String email) throws UserNotFountException, NullUserException {
+    public UserAccount removeContact(UserAccount userAccount, int idContact) throws UserNotFountException, NullUserException {
         if(userAccount != null) {
             for(Contact contact : userAccount.getContacts()) {
-                if(email.equals(contact.getEmail())) {
+                if(idContact == contact.getId()) {
                     userAccount.getContacts().remove(contact);
                     return userRepository.save(userAccount);
                 }
             }
-            throw new UserNotFountException("No user was found with this email");
+            throw new UserNotFountException("No user was found with this id");
         } else {
             throw new NullUserException("Invalid user account");
         }

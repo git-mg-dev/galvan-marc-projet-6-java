@@ -73,7 +73,7 @@ public class ContactServiceTest {
         int initialContactNumber = userAccount.getContacts().size();
 
         // WHEN
-        UserAccount saveUser = contactService.removeContact(userAccount, "mr@mail.com");
+        UserAccount saveUser = contactService.removeContact(userAccount, 3);
 
         // THEN
         assertEquals(initialContactNumber - 1, saveUser.getContacts().size());
@@ -85,7 +85,7 @@ public class ContactServiceTest {
         UserAccount userAccount = userService.findUserByEmail("pauline.test@mail.com");
 
         // WHEN & THEN
-        assertThrows(UserNotFountException.class, () -> contactService.removeContact(userAccount, "unexistinguser@mail.com"));
+        assertThrows(UserNotFountException.class, () -> contactService.removeContact(userAccount, 1206));
     }
 
     @Test

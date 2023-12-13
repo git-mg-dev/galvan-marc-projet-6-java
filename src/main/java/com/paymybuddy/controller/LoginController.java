@@ -4,7 +4,6 @@ import com.paymybuddy.model.*;
 import com.paymybuddy.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,13 +16,7 @@ public class LoginController {
 
     @Autowired
     private SecurityService securityService;
-/*
-    private final OAuth2AuthorizedClientService authorizedClientService;
 
-    public LoginController(OAuth2AuthorizedClientService authorizedClientService) {
-        this.authorizedClientService = authorizedClientService;
-    }
-*/
     @GetMapping("/login")
     public String displayLoginForm() {
         return "/login";

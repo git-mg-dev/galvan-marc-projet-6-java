@@ -4,6 +4,7 @@ import com.paymybuddy.exceptions.ContactAlreadyExistsException;
 import com.paymybuddy.exceptions.NullUserException;
 import com.paymybuddy.exceptions.UserNotFountException;
 import com.paymybuddy.model.Contact;
+import com.paymybuddy.model.ContactDisplay;
 import com.paymybuddy.model.UserAccount;
 import com.paymybuddy.model.UserStatus;
 import com.paymybuddy.repository.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContactService {

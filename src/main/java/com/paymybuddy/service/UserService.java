@@ -1,9 +1,6 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.exceptions.InvalidRegisterInformation;
-import com.paymybuddy.exceptions.NullUserException;
-import com.paymybuddy.exceptions.UserAlreadyExistException;
-import com.paymybuddy.exceptions.UserNotFountException;
+import com.paymybuddy.exceptions.*;
 import com.paymybuddy.model.*;
 import com.paymybuddy.repository.UserRepository;
 import org.springframework.beans.InvalidPropertyException;
@@ -11,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -65,7 +64,65 @@ public class UserService {
         }
     }
 
+    public UserAccount changePassword(UserAccount userAccount, PasswordChange passwordChange) throws NullUserException, WrongPasswordException, UserNotFountException {
+        if(userAccount != null) {
+            if(passwordEncoder.matches(passwordChange.getCurrentPassword(), userAccount.getPassword())) {
+                userAccount.setPassword(passwordChange.getNewPassword());
+                return updateUserInfo(userAccount, true);
+            } else {
+                throw new WrongPasswordException("Invalid password");
+            }
+        } else {
+            throw new NullUserException("Invalid user account");
+        }
+    }
+
+    /**
+     * Get a list of PAYMENT operations to display from a user account
+     * @param userAccount user data
+     * @return the list of operations to display
+     */
+    public List<OperationDisplay> getPaymentToDisplay(UserAccount userAccount) {
+        List<OperationDisplay> operationDisplays = new ArrayList<>();
+        for (Operation operation : userAccount.getOperations()) {
+            if(operation.getOperationType() == OperationType.PAYMENT) {
+                Optional<UserAccount> optionalUserAccount = userRepository.findById(operation.getRecipientId());
+                UserAccount recipient = optionalUserAccount.orElse(null);
+
+                if (recipient != null) {
+                    OperationDisplay operationDisplay = new OperationDisplay(
+                            operation.getRecipientId(),
+                            recipient.getFirstName() + " " + recipient.getLastName(),
+                            operation.getDescription(), Float.toString(operation.getAmount())
+                    );
+                    operationDisplays.add(operationDisplay);
+                }
+            }
+        }
+
+        return operationDisplays;
+    }
+
+    /**
+     * Get a list of ENABLED contacts to display from a user account
+     * @param userAccount user data
+     * @return the list of contact to display
+     */
+    public List<ContactDisplay> getContactToDisplay(UserAccount userAccount) {
+        List<ContactDisplay> result = new ArrayList<>();
+        for (Contact contact : userAccount.getContacts()) {
+            Optional<UserAccount> optionalUserAccount = userRepository.findById(contact.getId());
+            UserAccount contactUser = optionalUserAccount.orElse(null);
+
+            if(contactUser != null && contactUser.getStatus() == UserStatus.ENABLED) {
+                result.add(new ContactDisplay(contactUser.getId(), contactUser.getEmail(), contactUser.getFirstName(), contactUser.getLastName(), contactUser.isOpenidconnectUser()));
+            }
+        }
+        return result;
+    }
+
     private void encodePassword(UserAccount userAccount, RegisterInfo registerInfo){
         userAccount.setPassword(passwordEncoder.encode(registerInfo.getPassword()));
     }
+
 }

@@ -29,6 +29,8 @@ public class UserAccount {
     private UserStatus status;
     @Column(name = "creation_date")
     private Date creationDate;
+    @Column(name = "deletion_date")
+    private Date deletionDate;
 
     @Column(name = "openidconnect_user")
     private boolean openidconnectUser;
@@ -45,7 +47,7 @@ public class UserAccount {
 
     @OneToMany(
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL
+            cascade = { CascadeType.MERGE, CascadeType.PERSIST }
     )
     @JoinTable(
             name = "contact",
@@ -132,6 +134,14 @@ public class UserAccount {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Date getDeletionDate() {
+        return deletionDate;
+    }
+
+    public void setDeletionDate(Date deletionDate) {
+        this.deletionDate = deletionDate;
     }
 
     public boolean isOpenidconnectUser() {

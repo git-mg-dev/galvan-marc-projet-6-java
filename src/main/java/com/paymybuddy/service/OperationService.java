@@ -95,34 +95,38 @@ public class OperationService {
             }
 
             float paymentAmountFloat = getFloatFromInt(paymentInfo.getAmount());
+            float chargedAmount = getChargedAmount(paymentInfo.getAmount());
 
-            if (recipient != null && recipient.getStatus() == UserStatus.ENABLED) {
-                float chargedAmount = getChargedAmount(paymentInfo.getAmount());
+            if(sender.getAccountBalance() >= paymentAmountFloat + chargedAmount) {
+                if (recipient != null && recipient.getStatus() == UserStatus.ENABLED) {
 
-                //Charged amount is taken from the balance of the sender
-                Operation operation = new Operation(new Date(), OperationType.PAYMENT, paymentInfo.getDescription(),
-                        paymentAmountFloat, chargedAmount, sender.getId(), recipient.getId(), OperationStatus.PROCESSING);
+                    //Charged amount is taken from the balance of the sender
+                    Operation operation = new Operation(new Date(), OperationType.PAYMENT, paymentInfo.getDescription(),
+                            paymentAmountFloat, chargedAmount, sender.getId(), recipient.getId(), OperationStatus.PROCESSING);
 
-                sender.setAccountBalance(sender.getAccountBalance() - paymentAmountFloat - chargedAmount);
-                sender.getOperations().add(operation);
-                recipient.setAccountBalance(recipient.getAccountBalance() + paymentAmountFloat);
+                    sender.setAccountBalance(sender.getAccountBalance() - paymentAmountFloat - chargedAmount);
+                    sender.getOperations().add(operation);
+                    recipient.setAccountBalance(recipient.getAccountBalance() + paymentAmountFloat);
 
-                UserAccount savedSender = userRepository.save(sender);
-                UserAccount savedRecipient = userRepository.save(recipient);
+                    UserAccount savedSender = userRepository.save(sender);
+                    UserAccount savedRecipient = userRepository.save(recipient);
 
-                if(savedRecipient != null) {
-                    operation = savedSender.getOperations().get(savedSender.getOperations().size()-1);
-                    updateOperationStatus(operation, OperationStatus.SUCCEEDED);
+                    if (savedRecipient != null) {
+                        operation = savedSender.getOperations().get(savedSender.getOperations().size() - 1);
+                        updateOperationStatus(operation, OperationStatus.SUCCEEDED);
 
-                    return savedSender;
+                        return savedSender;
 
+                    } else {
+                        throw new PaymentFailedException("Payment failed from " + sender.getEmail() + " to user with id " +
+                                paymentInfo.getRecipientId() + " (" + paymentInfo.getDescription() + ": " +
+                                paymentInfo.getAmount() + "€)");
+                    }
                 } else {
-                    throw new PaymentFailedException("Payment failed from " + sender.getEmail() + " to user with id " +
-                            paymentInfo.getRecipientId() + " (" + paymentInfo.getDescription() + ": " +
-                            paymentInfo.getAmount() + "€)");
+                    throw new UserNotFountException("No user was found with this email");
                 }
             } else {
-                throw new UserNotFountException("No user was found with this email");
+                throw new PaymentFailedException("Not enough money on account balance");
             }
         } else {
             throw new NullUserException("Invalid user account");

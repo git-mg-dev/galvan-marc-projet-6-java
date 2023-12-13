@@ -99,6 +99,16 @@ public class OperationServiceTest {
     }
 
     @Test
+    public void paymentTest_InvalidAmount_Fail() {
+        // GIVEN
+        UserAccount sender = userService.findUserByEmail("pauline.test@mail.com");
+        PaymentInfo paymentInfo = new PaymentInfo(2, "whatever", 1000);
+
+        // WHEN & THEN
+        assertThrows(PaymentFailedException.class, () -> operationService.sendPayment(sender, paymentInfo));
+    }
+
+    @Test
     public void paymentTest_PaymentFailed_Fail() throws NullUserException, UserNotFountException, PaymentFailedException {
         //TODO: il faudrait mocker le UserRepository et indiquer qu'il retourne null quand on appelle Save
         // mais comment l'injecter dans OperationService ?

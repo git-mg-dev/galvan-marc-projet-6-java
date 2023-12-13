@@ -51,6 +51,9 @@
         <div class="row">
             <h1>Send Money</h1>
         </div>
+        <div th:if="${param.error}" class="alert alert-danger">Payment failed</div>
+        <div th:if="${param.success}" class="alert alert-success">Payment sent! :)</div>
+        <br>
         <div>
             <a class="btn btn-primary text-white" th:href="@{/contact}">Add connection</a>
         </div>

@@ -51,6 +51,8 @@
         <div class="row">
             <h1>Contacts</h1>
         </div>
+        <div th:if="${param.error}" class="alert alert-danger">Invalid email</div>
+        <div th:if="${param.success}" class="alert alert-success">New contact added!</div>
         <br><br>
         <div class="row">
             <h2>My contacts</h2>
@@ -82,9 +84,6 @@
         <br><br>
         <div class="row">
             <h2>Add a contact</h2>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger">
-            Invalid email
         </div>
         <div>
             <form action="#" method="post" th:action="@{/contact}" th:object="${contactInfo}">

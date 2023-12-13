@@ -47,6 +47,9 @@
     <br>
 
     <div class="container">
+        <div th:if="${param.error}">
+            <div class="alert alert-danger">An error occurred.</div>
+        </div>
         <div class="row">
             <h1>Welcome <span th:text="${firstName}">Firstname</span>!</h1>
         </div>

@@ -23,7 +23,7 @@
                         <a class="nav-link active" th:href="@{/index}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"th:href="@{/send}">Transfer</a>
+                        <a class="nav-link"th:href="@{/transfer}">Transfer</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/profile}">Profile</a>
@@ -38,6 +38,7 @@
             </div>
         </div>
     </nav>
+    <br>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
@@ -47,54 +48,52 @@
 
     <br>
 
-    <div class="container">
-        <div class="row">
-            <h1>Contacts</h1>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger">Invalid email</div>
-        <div th:if="${param.success}" class="alert alert-success">New contact added!</div>
-        <br><br>
-        <div class="row">
-            <h2>My contacts</h2>
-        </div>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th class="text-center">Firstname</th>
-                <th class="text-center">Lastname</th>
-                <th class="text-center">Email</th>
-                <th class="text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${#lists.isEmpty(contacts)}">
-                <td colspan="4">No contact found.</td>
-            </tr>
-            <tr th:each="contact : ${contacts}">
-                <td th:text="${contact.firstName}" class="text-center">Eztitxu</td>
-                <td th:text="${contact.lastName}" class="text-center">Hirigoyen</td>
-                <td th:text="${contact.email}" class="text-center">eztitxu.hirigoyen@mail.com</td>
-                <td class="text-center">
-                    <a th:href="@{/send(id=${contact.id})}" href="#" class="btn btn-success" role="button">Pay</a>
-                    <a th:href="@{/contact-remove(id=${contact.id})}" href="#" class="btn btn-danger" role="button">Remove</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br><br>
-        <div class="row">
-            <h2>Add a contact</h2>
-        </div>
-        <div>
-            <form action="#" method="post" th:action="@{/contact}" th:object="${contactInfo}">
-                <label for="email" class="control-label">Email</label>
-                <input id="email" type="email" class="form-control" placeholder="Enter email address"th:field="*{email}" />
-                <div class="col-sm-4">
-                    <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Wrong email format</span>
-                </div>
-                <button type="submit" class="btn btn-primary">Add contact</button>
-            </form>
-        </div>
+    <div class="row">
+        <h1>Contacts</h1>
+    </div>
+    <div th:if="${param.error}" class="alert alert-danger">Invalid email</div>
+    <div th:if="${param.success}" class="alert alert-success">New contact added!</div>
+    <br><br>
+    <div class="row">
+        <h2>My contacts</h2>
+    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr class="bg-success text-white">
+            <th class="text-center">Firstname</th>
+            <th class="text-center">Lastname</th>
+            <th class="text-center">Email</th>
+            <th class="text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(contacts)}">
+            <td colspan="4">No contact found.</td>
+        </tr>
+        <tr th:each="contact : ${contacts}">
+            <td th:text="${contact.firstName}" class="text-center">Eztitxu</td>
+            <td th:text="${contact.lastName}" class="text-center">Hirigoyen</td>
+            <td th:text="${contact.email}" class="text-center">eztitxu.hirigoyen@mail.com</td>
+            <td class="text-center">
+                <a th:href="@{/transfer(id=${contact.id})}" href="#" class="btn btn-success" role="button">Pay</a>
+                <a th:href="@{/contact-remove(id=${contact.id})}" href="#" class="btn btn-danger" role="button">Remove</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <div class="row">
+        <h2>Add a contact</h2>
+    </div>
+    <div>
+        <form method="post" th:action="@{/contact}" th:object="${contactInfo}">
+            <label for="email" class="control-label">Email</label>
+            <input id="email" type="email" class="form-control" placeholder="Enter email address"th:field="*{email}" />
+            <div class="col-sm-4">
+                <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Wrong email format</span>
+            </div>
+            <button type="submit" class="btn btn-primary">Add contact</button>
+        </form>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>

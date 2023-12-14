@@ -7,109 +7,70 @@
     <title>Pay My Buddy</title>
 </head>
 <body>
-<div class="container">
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div>
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/index}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/send}">Transfer</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/profile}">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/contact}">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/logout}">Logout</a>
-                    </li>
-                </ul>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/index}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/transfer}">Transfer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/profile}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/contact}">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/logout}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <br>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Send money</li>
+            </ol>
+        </nav>
+        <br>
+        <div class="row">
+            <div class="col-sm-8">
+                <h1>Send Money</h1>
+            </div>
+            <div class="col-sm-4 text-right text-primary">
+                <h2>balance: <span th:text="${balance}">146.23</span>€</h2>
             </div>
         </div>
-    </nav>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Transfer</li>
-        </ol>
-    </nav>
-
-    <br>
-
-    <div class="container">
-        <div class="row">
-            <h1>Send Money</h1>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger">Payment failed</div>
-        <div th:if="${param.success}" class="alert alert-success">Payment sent! :)</div>
+        <div th:if="${param.error}" class="alert alert-danger">Transfer failed</div>
+        <div th:if="${param.success}" class="alert alert-success">Transfer registered! The money should be on your bank account in a couple of days.</div>
         <br>
         <div>
-            <a class="btn btn-primary text-white" th:href="@{/contact}">Add connection</a>
-        </div>
-        <br><br>
-        <div>
-            <form action="#" method="post" th:action="@{/send}" th:object="${paymentInfo}">
-                <select id="contacts" class="form-control" th:field="*{recipientId}">
-                    <option value="0" disabled>Select A Connection</option>
-                    <option th:each="contact : ${contacts}"
-                            th:value="${contact.id}"
-                            th:text="${contact.firstName + ' ' + contact.lastName}"
-                            th:selected="${contact.id == selectedContactId}"
-                    ></option>
-                </select>
+            <p th:if="${balance == 0}">You don't have any money to send.</p>
+            <form th:unless="${balance == 0}" method="post" th:action="@{/send}" th:object="${transferInfo}">
+                <label for="iban">IBAN</label>
+                <input type="text" id="iban" class="form-control" th:field="*{iban}" placeholder="Enter your IBAN" />
                 <div class="col-sm-4">
-                    <span class="text-danger" th:if="${#fields.hasErrors('recipientId')}" th:errors="*{recipientId}">Invalid recipient</span>
+                    <span class="text-danger" th:if="${#fields.hasErrors('iban')}" th:errors="*{iban}">Invalid IBAN</span>
                 </div>
-                <input id="description" type="text" class="form-control" placeholder="Ex: restaurant" th:field="*{description}" />
-                <div class="col-sm-4">
-                    <span class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Invalid description</span>
-                </div>
-                <input id="amount" type="number" class="form-control" placeholder="0" th:field="*{amount}" />
-                <div class="col-sm-4">
-                    <span class="text-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Wrong amount</span>
-                </div>
-                <button type="submit" class="btn btn-success">Pay</button>
+                <button type="submit" class="btn btn-primary">Send money</button>
             </form>
         </div>
-        <br><br>
-        <div class="row">
-            <h2>My Transactions</h2>
-        </div>
-        <table class="table table-striped">
-            <thead>
-            <tr class="bg-success text-white">
-                <th class="text-center">Connections</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">Amount</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${#lists.isEmpty(operations)}">
-                <td colspan="4">No payment yet.</td>
-            </tr>
-            <tr th:each="operation : ${operations}">
-                <td th:text="${operation.contactName}" class="text-center">Eztitxu</td>
-                <td th:text="${operation.description}" class="text-center">Restaurant bill share</td>
-                <td th:text="${operation.amount + '€'}" class="text-center">10€</td>
-            </tr>
-            </tbody>
-        </table>
-        TODO: order by id desc + pagination
     </div>
-</div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
 </body>
 </html>

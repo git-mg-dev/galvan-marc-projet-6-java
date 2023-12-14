@@ -38,10 +38,11 @@ public class RegisterController {
                 UserAccount newUserAccount = userService.registerNewUserAccount(registerInfo, false);
 
                 if (newUserAccount != null) {
-                    securityService.autoLogin(registerInfo.getEmail(), registerInfo.getPassword());
-                    model.addAttribute("firstName", newUserAccount.getFirstName());
-                    model.addAttribute("balance", newUserAccount.getAccountBalance()+"€");
-                    return "/index";
+                    //TODO: autologin doesn't work
+                    //securityService.autoLogin(registerInfo.getEmail(), registerInfo.getPassword());
+                    //model.addAttribute("firstName", newUserAccount.getFirstName());
+                    //model.addAttribute("balance", newUserAccount.getAccountBalance()+"€");
+                    return "redirect:register?success";
                 } else {
                     model.addAttribute("registerForm", registerInfo);
                     bindingResult.addError(new ObjectError("global", "User account creation failed, please try again."));

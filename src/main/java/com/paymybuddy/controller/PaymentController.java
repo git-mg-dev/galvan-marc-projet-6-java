@@ -1,6 +1,5 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.exceptions.ContactAlreadyExistsException;
 import com.paymybuddy.exceptions.NullUserException;
 import com.paymybuddy.exceptions.PaymentFailedException;
 import com.paymybuddy.exceptions.UserNotFountException;
@@ -32,7 +31,7 @@ public class PaymentController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/send")
+    @GetMapping("/transfer")
     public String displayPayments(Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model, PaymentInfo paymentInfo, @RequestParam(required = false) Integer id) {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
         //TODO: remove id if it doesn't work
@@ -41,29 +40,29 @@ public class PaymentController {
                 id = 0;
             }
             addDataToModel(model, userAccount, id);
-            return "/send";
+            return "/transfer";
         } else {
             return "redirect:index?error";
         }
     }
 
-    @PostMapping("/send")
+    @PostMapping("/transfer")
     public String sendPayment(@Valid PaymentInfo paymentInfo, BindingResult bindingResult, Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
 
         if (!bindingResult.hasErrors()) {
             try {
                 userAccount = operationService.sendPayment(userAccount, paymentInfo);
-                return "redirect:send?success";
+                return "redirect:transfer?success";
             } catch (NullUserException | UserNotFountException | PaymentFailedException e) {
                 //TODO log
                 ObjectError error = new ObjectError("error", e.getMessage());
                 bindingResult.addError(error);
-                return "redirect:send?error";
+                return "redirect:transfer?error";
             }
         } else {
             addDataToModel(model, userAccount, 0);
-            return "/send";
+            return "/transfer";
         }
     }
 
@@ -77,6 +76,7 @@ public class PaymentController {
         List<OperationDisplay> operationDisplays = userService.getPaymentToDisplay(userAccount);
         List<ContactDisplay> contactDisplays = userService.getContactToDisplay(userAccount);
 
+        model.addAttribute("balance", userAccount.getAccountBalance());
         model.addAttribute("operations", operationDisplays);
         model.addAttribute("contacts", contactDisplays);
         model.addAttribute("selectedContactId", selectedContactId); //TODO: remove if it doesn't work

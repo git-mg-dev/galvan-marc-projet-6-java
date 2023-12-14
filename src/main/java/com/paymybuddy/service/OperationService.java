@@ -8,6 +8,7 @@ import com.paymybuddy.model.*;
 import com.paymybuddy.repository.OperationRepository;
 import com.paymybuddy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,8 +57,7 @@ public class OperationService {
     public UserAccount makeTransfer(UserAccount userAccount, float transferAmount, String iban) throws OperationFailedException {
         float chargedAmount = getChargedAmount(transferAmount);
 
-        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && !iban.isEmpty() &&
-                transferAmount > 0 && transferAmount + chargedAmount <= userAccount.getAccountBalance()) {
+        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && !iban.isEmpty() && transferAmount > 0 ) {
 
             //Charged amount is taken from the transfer amount
             Operation operation = new Operation(new Date(), OperationType.TRANSFER,
@@ -65,7 +65,7 @@ public class OperationService {
                     userAccount.getId(), userAccount.getId(), OperationStatus.PROCESSING);
             operation.setIban(iban);
 
-            userAccount.setAccountBalance(userAccount.getAccountBalance() - transferAmount - chargedAmount);
+            userAccount.setAccountBalance(0);
             userAccount.getOperations().add(operation);
 
             UserAccount savedUser = userRepository.save(userAccount);
@@ -138,6 +138,10 @@ public class OperationService {
         bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
 
         return bigDecimal.floatValue();
+    }
+
+    public Iterable<Operation> getOperationsByRecipient(int recipientId) {
+        return operationRepository.findByRecipientId(recipientId);
     }
 
     private void updateOperationStatus(Operation operation, OperationStatus operationStatus) {

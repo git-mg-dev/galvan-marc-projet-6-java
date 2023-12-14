@@ -34,7 +34,6 @@ public class ContactController {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
 
         if(userAccount != null) {
-            // TODO: don't display disabled contacts
             addDataToModel(model, userAccount);
             return "/contact";
         } else {

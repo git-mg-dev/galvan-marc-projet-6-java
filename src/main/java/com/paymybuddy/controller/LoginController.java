@@ -30,7 +30,7 @@ public class LoginController {
             return "redirect:login?error";
         } else {
             model.addAttribute("firstName", userAccount.getFirstName());
-            model.addAttribute("balance", userAccount.getAccountBalance()+"€");
+            model.addAttribute("balance", userAccount.getAccountBalance());
             return ("/index");
         }
     }

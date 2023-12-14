@@ -7,47 +7,47 @@
     <title>Pay My Buddy</title>
 </head>
 <body>
-<div class="container">
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div>
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/index}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/send}">Transfer</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/contact}">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/logout}">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Profile</li>
-        </ol>
-    </nav>
-
-    <br>
-
     <div class="container">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/index}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/transfer}">Transfer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/contact}">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/logout}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <br>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            </ol>
+        </nav>
+
+        <br>
+
         <div class="row">
             <h1>Profile</h1>
         </div>
@@ -57,9 +57,12 @@
         <div th:if="${param.success}">
             <div class="alert alert-success">It's done!</div>
         </div>
+        <div class="row">
+            <h2>Your information</h2>
+        </div>
         <div>
             <p th:if="${userInfo.openidconnectUser == true}">You can't change your profile information because you're logged-in with Google.</p>
-            <form th:unless="${userInfo.openidconnectUser == true}" action="#" method="post" th:action="@{/profile}" th:object="${userInfo}">
+            <form th:unless="${userInfo.openidconnectUser == true}" method="post" th:action="@{/profile}" th:object="${userInfo}">
                 <div class="form-group mb-3">
                     <!-- label for="email" class="control-label">Email</label -->
                     <input th:field="*{email}"
@@ -105,7 +108,7 @@
             <h2>Change password</h2>
         </div>
         <p th:if="${userInfo.openidconnectUser == true}">You can't change your profile information because you're logged-in with Google.</p>
-        <form th:unless="${userInfo.openidconnectUser == true}" action="#" method="post" th:action="@{/profile_password}" th:object="${passwordInfo}">
+        <form th:unless="${userInfo.openidconnectUser == true}" method="post" th:action="@{/profile_password}" th:object="${passwordInfo}">
             <div class="form-group mb-3">
                 <label for="currentPassword" class="control-label">Current password</label>
                 <input th:field="*{currentPassword}"
@@ -149,16 +152,15 @@
         <div class="row">
             <h3>Close account</h3>
         </div>
-        <form action="#" method="post" th:action="@{/profile_close}" th:object="${userAccount}">
+        <form method="post" th:action="@{/profile_close}" th:object="${userAccount}">
             <div class="form-group mb-3">This action is non-reversible. You won't be able to use or access this account anymore.</div>
             <div class="form-group mb-3">Are you sure? Really sure?</div>
             <div class="form-group mb-3">Okay then...</div>
             <button type="submit" class="btn btn-outline-danger">Delete account</button>
         </form>
     </div>
-</div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
 </body>
 </html>

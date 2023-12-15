@@ -58,12 +58,15 @@
         </div>
         <div th:if="${param.error}" class="alert alert-danger">Payment failed</div>
         <div th:if="${param.success}" class="alert alert-success">Payment sent! :)</div>
+        <div th:if="${transferError}" class="alert alert-danger">
+            <span th:text="${transferError}">Error message</span>
+        </div>
         <br>
         <div>
             <p th:if="${balance == 0}">You don't have any money to send. 😢 <a th:href="@{/deposit}">Make a deposit?</a></p>
             <form th:unless="${balance == 0}" method="post" th:action="@{/transfer}" th:object="${paymentInfo}">
                 <select id="recipientId" name="recipientId" class="form-control" > <!-- th:field="*{recipientId}" -->
-                    <option value="0" disabled>Select A Connection</option>
+                    <option value="0">Select A Connection</option>
                     <option th:each="contact : ${contacts}"
                             th:value="${contact.id}"
                             th:text="${contact.firstName + ' ' + contact.lastName}"

@@ -50,9 +50,11 @@ public class OperationController {
 
             } catch (OperationFailedException e) {
                 //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:send?error";
+                userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+                model.addAttribute("balance", userAccount.getAccountBalance());
+                model.addAttribute("transferInfo", transferInfo);
+                model.addAttribute("sendError", "Sending failed: " + e.getMessage());
+                return "/send";
             }
         }
 
@@ -83,9 +85,11 @@ public class OperationController {
 
             } catch (OperationFailedException e) {
                 //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:deposit?error";
+                userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+                model.addAttribute("balance", userAccount.getAccountBalance());
+                model.addAttribute("depositInfo", depositInfo);
+                model.addAttribute("depositError", "Deposit failed: " + e.getMessage());
+                return "/deposit";
             }
         }
 

@@ -39,7 +39,7 @@ public class PaymentController {
             if(id == null) {
                 id = 0;
             }
-            addDataToModel(model, userAccount, id);
+            addDataToModel(model, userAccount, id, "");
             return "/transfer";
         } else {
             return "redirect:index?error";
@@ -56,12 +56,12 @@ public class PaymentController {
                 return "redirect:transfer?success";
             } catch (NullUserException | UserNotFountException | PaymentFailedException e) {
                 //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:transfer?error";
+                userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+                addDataToModel(model, userAccount, paymentInfo.getRecipientId(), e.getMessage());
+                return "/transfer";
             }
         } else {
-            addDataToModel(model, userAccount, 0);
+            addDataToModel(model, userAccount, 0, "");
             return "/transfer";
         }
     }
@@ -72,14 +72,18 @@ public class PaymentController {
      * @param userAccount user data
      * @param selectedContactId id of contact to send payment to
      */
-    private void addDataToModel(Model model, UserAccount userAccount, Integer selectedContactId) {
+    private void addDataToModel(Model model, UserAccount userAccount, Integer selectedContactId, String errorMessage) {
         List<OperationDisplay> operationDisplays = userService.getPaymentToDisplay(userAccount);
         List<ContactDisplay> contactDisplays = userService.getContactToDisplay(userAccount);
 
         model.addAttribute("balance", userAccount.getAccountBalance());
         model.addAttribute("operations", operationDisplays);
         model.addAttribute("contacts", contactDisplays);
-        model.addAttribute("selectedContactId", selectedContactId); //TODO: remove if it doesn't work
+        model.addAttribute("selectedContactId", selectedContactId);
+
+        if(!errorMessage.isEmpty()) {
+            model.addAttribute("transferError", "Payment failed: " + errorMessage);
+        }
     }
 
 }

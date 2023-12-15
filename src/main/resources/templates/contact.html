@@ -49,13 +49,23 @@
     <br>
 
     <div class="row">
-        <h1>Contacts</h1>
+        <div class="col-sm-8">
+            <h1>Contacts</h1>
+        </div>
     </div>
-    <div th:if="${param.error}" class="alert alert-danger">Invalid email</div>
+    <div th:if="${param.error}" class="alert alert-danger">
+        <span th:if="${contactError} == ''">Invalid email</span>
+        <span th:unless="${contactError} == ''" th:text="${contactError}"></span>
+    </div>
     <div th:if="${param.success}" class="alert alert-success">New contact added!</div>
+    <div th:if="${contactError}" class="alert alert-danger">
+        <span th:text="${contactError}">Error message</span>
+    </div>
     <br><br>
     <div class="row">
-        <h2>My contacts</h2>
+        <div class="col-sm-8">
+            <h2>My contacts</h2>
+        </div>
     </div>
     <table class="table table-striped">
         <thead>
@@ -75,24 +85,30 @@
             <td th:text="${contact.lastName}" class="text-center">Hirigoyen</td>
             <td th:text="${contact.email}" class="text-center">eztitxu.hirigoyen@mail.com</td>
             <td class="text-center">
-                <a th:href="@{/transfer(id=${contact.id})}" href="#" class="btn btn-success" role="button">Pay</a>
-                <a th:href="@{/contact-remove(id=${contact.id})}" href="#" class="btn btn-danger" role="button">Remove</a>
+                <a th:href="@{/transfer(id=${contact.id})}" href="#" class="btn btn-success" role="button">Pay this buddy</a>
+                <a th:href="@{/contact-remove(id=${contact.id})}" href="#" class="btn btn-outline-danger" role="button">Remove</a>
             </td>
         </tr>
         </tbody>
     </table>
     <br><br>
     <div class="row">
-        <h2>Add a contact</h2>
+        <div class="col-sm-8">
+            <h2>Add a contact</h2>
+        </div>
     </div>
     <div>
-        <form method="post" th:action="@{/contact}" th:object="${contactInfo}">
-            <label for="email" class="control-label">Email</label>
-            <input id="email" type="email" class="form-control" placeholder="Enter email address"th:field="*{email}" />
-            <div class="col-sm-4">
-                <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Wrong email format</span>
+        <form method="post" th:action="@{/contact}" th:object="${contactInfo}" class="form-inline">
+            <label class="sr-only" for="email">Email</label>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Contact email</div>
+                </div>
+                <input type="email" class="form-control" id="email" placeholder="Enter email address" th:field="*{email}">
             </div>
-            <button type="submit" class="btn btn-primary">Add contact</button>
+
+            <button type="submit" class="btn btn-primary mb-2">Submit</button>
+            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="margin-left:5px;">Wrong email format</span>
         </form>
     </div>
 </div>

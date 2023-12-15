@@ -42,13 +42,15 @@ public class ContactController {
     }
 
     @GetMapping("/contact-remove")
-    public String removeContact(@RequestParam int id, Principal user, @AuthenticationPrincipal OidcUser oidcUser) {
+    public String removeContact(@RequestParam int id, Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
         try{
             userAccount = contactService.removeContact(userAccount, id);
         } catch (NullUserException | UserNotFountException e) {
             //TODO log
-            return "redirect:contact";
+            model.addAttribute("contactError", "Remove failed: " + e.getMessage());
+            addDataToModel(model, userAccount);
+            return "/contact";
         }
 
         return "redirect:contact";
@@ -64,14 +66,13 @@ public class ContactController {
 
                 // Reset email field
                 model.addAttribute("contactInfo", new ContactInfo());
-
                 return "redirect:contact?success";
 
             } catch (UserNotFountException | NullUserException | ContactAlreadyExistsException e) {
                 //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:contact?error";
+                model.addAttribute("contactError", "Invalid email: " + e.getMessage());
+                addDataToModel(model, userAccount);
+                return "/contact";
             }
         }
 

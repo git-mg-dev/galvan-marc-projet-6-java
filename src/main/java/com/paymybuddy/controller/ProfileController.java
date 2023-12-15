@@ -32,7 +32,9 @@ public class ProfileController {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
 
         if(userAccount != null) {
-            addDataToModel(model, userAccount);
+            ContactDisplay contactDisplay = new ContactDisplay(userAccount.getId(), userAccount.getEmail(),
+                    userAccount.getFirstName(), userAccount.getLastName(), userAccount.isOpenidconnectUser());
+            model.addAttribute("contactDisplay", contactDisplay);
             return "/profile";
         } else {
             return "redirect:index?error";
@@ -40,52 +42,76 @@ public class ProfileController {
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@Valid ContactDisplay userData, BindingResult bindingResult, Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
+    public String updateProfile(@Valid ContactDisplay contactDisplay, BindingResult bindingResult, Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
 
         if (!bindingResult.hasErrors()) {
             try {
-                userAccount.setEmail(userData.getEmail());
-                userAccount.setFirstName(userData.getFirstName());
-                userAccount.setLastName(userData.getLastName());
+                userAccount.setEmail(contactDisplay.getEmail());
+                userAccount.setFirstName(contactDisplay.getFirstName());
+                userAccount.setLastName(contactDisplay.getLastName());
 
                 userAccount = userService.updateUserInfo(userAccount, false);
                 return "redirect:profile?success";
             } catch (UserNotFountException | NullUserException e) {
                 //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:profile?error";
+                userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+                model.addAttribute("contactDisplay", contactDisplay);
+                model.addAttribute("updateProfileError", "Update profile failed: " + e.getMessage());
+                return "/profile";
             }
         }
-        addDataToModel(model, userAccount);
+        model.addAttribute("contactDisplay", contactDisplay);
         return "/profile";
     }
 
-    @PostMapping("/profile_password")
-    public String changePassword(@Valid PasswordChange passwordChange, BindingResult bindingResult, Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
+    @GetMapping("/profile_password")
+    public String displayPasswordForm(Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
 
-        if (!bindingResult.hasErrors()) {
+        if(userAccount != null) {
+            model.addAttribute("passwordChange", new PasswordChange());
+            model.addAttribute("openidconnectUser", userAccount.isOpenidconnectUser());
+            return "/profile_password";
+        } else {
+            return "redirect:index?error";
+        }
+    }
+
+    @PostMapping("/profile_password")
+    public String updatePassword(@Valid PasswordChange passwordChange, BindingResult bindingResult, Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
+        UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
+
+        if(!bindingResult.hasErrors()) {
             try {
                 userAccount = userService.changePassword(userAccount, passwordChange);
-                return "redirect:profile?success";
+                return "redirect:profile_password?success";
 
-            } catch (WrongPasswordException e) {
+            } catch (WrongPasswordException | NullUserException | UserNotFountException e) {
                 //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:profile?wrongpassword";
+                userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+                model.addAttribute("passwordChange", passwordChange);
+                model.addAttribute("openidconnectUser", userAccount.isOpenidconnectUser());
+                model.addAttribute("changePasswordError", "Changing password failed: " + e.getMessage());
+                return "/profile_password";
 
-            } catch (NullUserException | UserNotFountException e) {
-                //TODO log
-                ObjectError error = new ObjectError("error", e.getMessage());
-                bindingResult.addError(error);
-                return "redirect:profile?error";
             }
+        } else {
+            model.addAttribute("passwordChange", passwordChange);
+            model.addAttribute("openidconnectUser", userAccount.isOpenidconnectUser());
+            return "/profile_password";
         }
-        addDataToModel(model, userAccount);
-        return "/profile";
+    }
+
+    @GetMapping("/profile_close")
+    public String displayCloseProfile(Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model) {
+        UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
+
+        if(userAccount != null) {
+            return "/profile_close";
+        } else {
+            return "redirect:index?error";
+        }
     }
 
     @PostMapping("/profile_close")
@@ -102,19 +128,14 @@ public class ProfileController {
                 return "redirect:logout";
             } catch (UserNotFountException | NullUserException e) {
                 //TODO log
-                return "redirect:profile?error";
+                userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+                model.addAttribute("closeProfileError", "Closing account failed: " + e.getMessage());
+                return "/profile_close";
             }
         } else {
-            addDataToModel(model, userAccount);
-            return "redirect:profile?balance";
+            userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
+            model.addAttribute("closeProfileError", "Closing account failed: Balance must be 0€ before closing ");
+            return "/profile_close";
         }
-    }
-
-    private void addDataToModel(Model model, UserAccount userAccount) {
-        ContactDisplay contactDisplay = new ContactDisplay(userAccount.getId(), userAccount.getEmail(), userAccount.getFirstName(), userAccount.getLastName(), userAccount.isOpenidconnectUser());
-        PasswordChange passwordChange = new PasswordChange();
-
-        model.addAttribute("userInfo", contactDisplay);
-        model.addAttribute("passwordInfo", passwordChange);
     }
 }

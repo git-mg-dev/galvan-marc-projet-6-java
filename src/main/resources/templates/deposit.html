@@ -56,6 +56,9 @@
         </div>
         <div th:if="${param.error}" class="alert alert-danger">Deposit failed</div>
         <div th:if="${param.success}" class="alert alert-success">Deposit done! <a th:href="@{/transfer}">Make a transfer to a buddy? 💸</a></div>
+        <div th:if="${depositError}" class="alert alert-danger">
+            <span th:text="${depositError}">Error message</span>
+        </div>
         <br>
         <div class="row">
             <div class="col-sm-8">

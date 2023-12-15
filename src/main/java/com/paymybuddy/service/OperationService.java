@@ -129,7 +129,7 @@ public class OperationService {
                 throw new PaymentFailedException("Not enough money on account balance");
             }
         } else {
-            throw new NullUserException("Invalid user account");
+            throw new NullUserException("Invalid user account or amount value");
         }
     }
 

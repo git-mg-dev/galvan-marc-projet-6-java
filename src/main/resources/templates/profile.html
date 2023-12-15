@@ -7,157 +7,116 @@
     <title>Pay My Buddy</title>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div>
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/index}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/transfer}">Transfer</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/contact}">Contact</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/logout}">Logout</a>
-                        </li>
-                    </ul>
-                </div>
+<div class="container">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/index}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/transfer}">Transfer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/contact}">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
             </div>
-        </nav>
-        <br>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Profile</li>
-            </ol>
-        </nav>
+        </div>
+    </nav>
+    <br>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+    </nav>
+    <br>
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>Your information</h1>
+        </div>
+    </div>
+    <br>
+    <div th:if="${param.error}" class="alert alert-danger">An error occurred.</div>
+    <div th:if="${param.success}">
+        <div class="alert alert-success">It's done!</div>
+    </div>
+    <div th:if="${updateProfileError}" class="alert alert-danger">
+        <span th:text="${updateProfileError}">Error message</span>
+    </div>
 
-        <br>
-
-        <div class="row">
-            <h1>Profile</h1>
+    <div class="row">
+        <div class="col-4">
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-primary"><a th:href="@{/profile}">Profile information</a></li>
+                <li class="list-group-item"><a th:href="@{/profile_password}">Password</a></li>
+                <li class="list-group-item"><a th:href="@{/profile_close}">Close account</a></li>
+            </ul>
         </div>
-        <div th:if="${param.error}" class="alert alert-danger">An error occurred.</div>
-        <div th:if="${param.wrongpassword}" class="alert alert-danger">Invalid password.</div>
-        <div th:if="${param.balance}" class="alert alert-danger">Balance must be 0 to close account.</div>
-        <div th:if="${param.success}">
-            <div class="alert alert-success">It's done!</div>
-        </div>
-        <div class="row">
-            <h2>Your information</h2>
-        </div>
-        <div>
-            <p th:if="${userInfo.openidconnectUser == true}">You can't change your profile information because you're logged-in with Google.</p>
-            <form th:unless="${userInfo.openidconnectUser == true}" method="post" th:action="@{/profile}" th:object="${userInfo}">
-                <div class="form-group mb-3">
-                    <!-- label for="email" class="control-label">Email</label -->
-                    <input th:field="*{email}"
-                           type="text"
-                           id="email"
-                           class="form-control"
-                           placeholder="Enter email address"
-                    >
-                    <div class="col-sm-4">
+        <div class="col-8">
+            <p th:if="${contactDisplay.openidconnectUser == true}">You can't change your profile information because you're logged-in with Google.</p>
+            <form th:unless="${contactDisplay.openidconnectUser == true}" method="post" th:action="@{/profile}" th:object="${contactDisplay}">
+                <div class="form-group row">
+                    <label for="email" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                        <input th:field="*{email}"
+                               type="email"
+                               id="email"
+                               class="form-control"
+                               placeholder="Enter email address"
+                        >
                         <span class="text-danger" th:errors="*{email}">Wrong email format</span>
                     </div>
                 </div>
-                <div class="form-group mb-3">
-                    <!-- label for="firstname" class="control-label">Firstname</label -->
-                    <input th:field="*{firstName}"
-                           type="text"
-                           id="firstname"
-                           class="form-control"
-                           placeholder="Enter firstname"
-                    >
-                    <div class="col-sm-4">
+
+                <div class="form-group row">
+                    <label for="firstname" class="col-sm-2 col-form-label">Firstname</label>
+                    <div class="col-sm-10">
+                        <input th:field="*{firstName}"
+                               type="text"
+                               id="firstname"
+                               class="form-control"
+                               placeholder="Enter firstname"
+                        >
                         <span class="text-danger" th:errors="*{firstName}">Firstname shouldn't be empty</span>
                     </div>
                 </div>
-                <div class="form-group mb-3">
-                    <!-- label for="lastname" class="control-label">Lastname</label -->
-                    <input th:field="*{lastName}"
-                           type="text"
-                           id="lastname"
-                           class="form-control"
-                           placeholder="Enter lastname"
-                    >
-                    <span class="text-danger" th:errors="*{lastName}">Lastname shouldn't be empty</span>
+
+                <div class="form-group row">
+                    <label for="lastname" class="col-sm-2 col-form-label">Lastname</label>
+                    <div class="col-sm-10">
+                        <input th:field="*{lastName}"
+                               type="text"
+                               id="lastname"
+                               class="form-control"
+                               placeholder="Mandatory"
+                        >
+                        <span class="text-danger" th:errors="*{lastName}">Lastname shouldn't be empty</span>
+                    </div>
                 </div>
-                <input th:field="*{id}" type="hidden" id="id">
-                <input th:field="*{openidconnectUser}" type="hidden" id="openidconnectUser">
-                <button type="submit" class="btn btn-primary">Update profile</button>
+                <div class="form-group row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Update profile</button>
+                    </div>
+                </div>
             </form>
         </div>
-        <br>
-        <hr>
-        <div class="row">
-            <h2>Change password</h2>
-        </div>
-        <p th:if="${userInfo.openidconnectUser == true}">You can't change your profile information because you're logged-in with Google.</p>
-        <form th:unless="${userInfo.openidconnectUser == true}" method="post" th:action="@{/profile_password}" th:object="${passwordInfo}">
-            <div class="form-group mb-3">
-                <label for="currentPassword" class="control-label">Current password</label>
-                <input th:field="*{currentPassword}"
-                       type="password"
-                       id="currentPassword"
-                       class="form-control"
-                       placeholder="Enter current password"
-                >
-                <div class="col-sm-4">
-                    <span class="text-danger" th:errors="*{currentPassword}">Password shouldn't be empty</span>
-                </div>
-            </div>
-            <div class="form-group mb-3">
-                <label for="newPassword" class="control-label">New password</label>
-                <input th:field="*{newPassword}"
-                       type="password"
-                       id="newPassword"
-                       class="form-control"
-                       placeholder="Enter new password, at least with 8 characters"
-                >
-                <div class="col-sm-4">
-                    <span class="text-danger" th:errors="*{newPassword}">Password shouldn't be empty</span>
-                </div>
-            </div>
-            <div class="form-group mb-3">
-                <label for="confirmPassword" class="control-label">Confirm new password</label>
-                <input th:field="*{confirmPassword}"
-                       type="password"
-                       id="confirmPassword"
-                       class="form-control"
-                       placeholder="Repeat new password"
-                >
-                <div class="col-sm-4">
-                    <span class="text-danger" th:errors="*{confirmPassword}">Password shouldn't be empty</span>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Update password</button>
-        </form>
-        <br>
-        <hr>
-        <div class="row">
-            <h3>Close account</h3>
-        </div>
-        <form method="post" th:action="@{/profile_close}" th:object="${userAccount}">
-            <div class="form-group mb-3">This action is non-reversible. You won't be able to use or access this account anymore.</div>
-            <div class="form-group mb-3">Are you sure? Really sure?</div>
-            <div class="form-group mb-3">Okay then...</div>
-            <button type="submit" class="btn btn-outline-danger">Delete account</button>
-        </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>

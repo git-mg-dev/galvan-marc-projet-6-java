@@ -26,7 +26,7 @@
                             <a class="nav-link" th:href="@{/transfer}">Transfer</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" th:href="@{/profile}">Profile</a>
+                            <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/contact}">Contact</a>
@@ -42,34 +42,48 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Send money</li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
             </ol>
         </nav>
         <br>
         <div class="row">
             <div class="col-sm-8">
-                <h1>Send Money</h1>
+                <h1>Close account</h1>
             </div>
-            <div class="col-sm-4 text-right text-primary">
-                <h2>balance: <span th:text="${balance}">146.23</span>€</h2>
-            </div>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger">Transfer failed</div>
-        <div th:if="${param.success}" class="alert alert-success">Transfer registered! The money should be on your bank account in a couple of days.</div>
-        <div th:if="${sendError}" class="alert alert-danger">
-            <span th:text="${sendError}">Error message</span>
         </div>
         <br>
-        <div>
-            <p th:if="${balance == 0}">You don't have any money to send.</p>
-            <form th:unless="${balance == 0}" method="post" th:action="@{/send}" th:object="${transferInfo}">
-                <label for="iban">IBAN</label>
-                <input type="text" id="iban" class="form-control" th:field="*{iban}" placeholder="Enter your IBAN" />
-                <div class="col-sm-4">
-                    <span class="text-danger" th:if="${#fields.hasErrors('iban')}" th:errors="*{iban}">Invalid IBAN</span>
-                </div>
-                <button type="submit" class="btn btn-primary">Send money</button>
-            </form>
+        <div th:if="${param.error}" class="alert alert-danger">An error occurred.</div>
+        <div th:if="${param.balance}" class="alert alert-danger">Balance must be 0 to close account.</div>
+        <div th:if="${param.success}">
+            <div class="alert alert-success">It's done!</div>
+        </div>
+        <div th:if="${closeProfileError}" class="alert alert-danger">
+            <span th:text="${closeProfileError}">Error message</span>
+        </div>
+
+        <div class="row">
+            <div class="col-4">
+                <ul class="list-group">
+                    <li class="list-group-item"><a th:href="@{/profile}">Profile information</a></li>
+                    <li class="list-group-item"><a th:href="@{/profile_password}">Password</a></li>
+                    <li class="list-group-item list-group-item-primary"><a th:href="@{/profile_close}">Close account</a></li>
+                </ul>
+            </div>
+            <div class="col-8">
+                <form method="post" th:action="@{/profile_close}" th:object="${userAccount}">
+                    <div class="col-sm-12">This action is non-reversible. You won't be able to use or access this account anymore.</div>
+                    <div class="col-sm-12">Are you sure? Really sure?</div>
+                    <br>
+                    <div class="col-sm-12">Okay then...</div>
+                    <br>
+                    <div class="form-group row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn btn-outline-danger">Delete account</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>

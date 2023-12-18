@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -49,7 +48,6 @@ public class OperationController {
                 return "redirect:send?success";
 
             } catch (OperationFailedException e) {
-                //TODO log
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
                 model.addAttribute("balance", userAccount.getAccountBalance());
                 model.addAttribute("transferInfo", transferInfo);
@@ -84,7 +82,6 @@ public class OperationController {
                 return "redirect:deposit?success";
 
             } catch (OperationFailedException e) {
-                //TODO log
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
                 model.addAttribute("balance", userAccount.getAccountBalance());
                 model.addAttribute("depositInfo", depositInfo);

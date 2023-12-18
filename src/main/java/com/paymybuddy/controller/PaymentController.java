@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,7 +33,6 @@ public class PaymentController {
     @GetMapping("/transfer")
     public String displayPayments(Principal user, @AuthenticationPrincipal OidcUser oidcUser, Model model, PaymentInfo paymentInfo, @RequestParam(required = false) Integer id) {
         UserAccount userAccount = securityService.getUserInfo(user, oidcUser);
-        //TODO: remove id if it doesn't work
         if(userAccount != null) {
             if(id == null) {
                 id = 0;
@@ -55,7 +53,6 @@ public class PaymentController {
                 userAccount = operationService.sendPayment(userAccount, paymentInfo);
                 return "redirect:transfer?success";
             } catch (NullUserException | UserNotFountException | PaymentFailedException e) {
-                //TODO log
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
                 addDataToModel(model, userAccount, paymentInfo.getRecipientId(), e.getMessage());
                 return "/transfer";

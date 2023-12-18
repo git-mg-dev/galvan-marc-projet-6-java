@@ -43,8 +43,6 @@ public class UserAccount {
     @JoinColumn(name = "id_sender")
     private List<Operation> operations;
 
-    //TODO: faire une autre liste avec les opérations dont le user est destinataire ?
-
     @OneToMany(
             fetch = FetchType.EAGER,
             cascade = { CascadeType.MERGE, CascadeType.PERSIST }

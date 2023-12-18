@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -47,7 +46,6 @@ public class ContactController {
         try{
             userAccount = contactService.removeContact(userAccount, id);
         } catch (NullUserException | UserNotFountException e) {
-            //TODO log
             model.addAttribute("contactError", "Remove failed: " + e.getMessage());
             addDataToModel(model, userAccount);
             return "/contact";
@@ -69,7 +67,6 @@ public class ContactController {
                 return "redirect:contact?success";
 
             } catch (UserNotFountException | NullUserException | ContactAlreadyExistsException e) {
-                //TODO log
                 model.addAttribute("contactError", "Invalid email: " + e.getMessage());
                 addDataToModel(model, userAccount);
                 return "/contact";

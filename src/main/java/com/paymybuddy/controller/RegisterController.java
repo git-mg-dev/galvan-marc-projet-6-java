@@ -38,10 +38,6 @@ public class RegisterController {
                 UserAccount newUserAccount = userService.registerNewUserAccount(registerInfo, false);
 
                 if (newUserAccount != null) {
-                    //TODO: autologin doesn't work
-                    //securityService.autoLogin(registerInfo.getEmail(), registerInfo.getPassword());
-                    //model.addAttribute("firstName", newUserAccount.getFirstName());
-                    //model.addAttribute("balance", newUserAccount.getAccountBalance()+"€");
                     return "redirect:register?success";
                 } else {
                     model.addAttribute("registerForm", registerInfo);

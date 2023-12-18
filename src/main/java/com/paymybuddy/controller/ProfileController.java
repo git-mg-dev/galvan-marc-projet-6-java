@@ -7,19 +7,20 @@ import com.paymybuddy.model.*;
 import com.paymybuddy.service.SecurityService;
 import com.paymybuddy.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
 import java.util.Date;
 
+@Log4j2
 @Controller
 public class ProfileController {
     @Autowired
@@ -54,7 +55,6 @@ public class ProfileController {
                 userAccount = userService.updateUserInfo(userAccount, false);
                 return "redirect:profile?success";
             } catch (UserNotFountException | NullUserException e) {
-                //TODO log
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
                 model.addAttribute("contactDisplay", contactDisplay);
                 model.addAttribute("updateProfileError", "Update profile failed: " + e.getMessage());
@@ -88,7 +88,6 @@ public class ProfileController {
                 return "redirect:profile_password?success";
 
             } catch (WrongPasswordException | NullUserException | UserNotFountException e) {
-                //TODO log
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
                 model.addAttribute("passwordChange", passwordChange);
                 model.addAttribute("openidconnectUser", userAccount.isOpenidconnectUser());
@@ -124,10 +123,9 @@ public class ProfileController {
                 userAccount.setDeletionDate(new Date());
                 userAccount = userService.updateUserInfo(userAccount, false);
 
-                //TODO log
+                log.info("User account " + userAccount.getId() + " has just been disabled");
                 return "redirect:logout";
             } catch (UserNotFountException | NullUserException e) {
-                //TODO log
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
                 model.addAttribute("closeProfileError", "Closing account failed: " + e.getMessage());
                 return "/profile_close";

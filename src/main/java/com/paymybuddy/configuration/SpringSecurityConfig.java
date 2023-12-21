@@ -24,17 +24,19 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http.authorizeHttpRequests(auth -> {
                 auth.requestMatchers("/register").permitAll();
+                auth.requestMatchers("/styles/*").permitAll();
+                auth.requestMatchers("/img/*").permitAll();
                 auth.anyRequest().authenticated();
         }).formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/index")
                         .failureUrl("/login?error")
                         .permitAll()
                 )
                 .rememberMe(Customizer.withDefaults())
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/index")
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

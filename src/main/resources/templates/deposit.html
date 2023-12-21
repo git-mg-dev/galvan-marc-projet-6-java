@@ -2,25 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width = device-width, initial-scale = 1, shrink-to-fit = no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link th:href="@{/styles/style.css}" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/14273d579a.js" crossorigin="anonymous"></script>
+
     <title>Pay My Buddy</title>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
+    <header>
+        <nav class="navbar navbar-expand-md bg-white navbar-light fixed-top mt-2">
+            <div class="container">
+                <a class="navbar-brand text-uppercase fw-bold" th:href="@{/index}">
+                    <span class="btn btn-lg logo text-white text-capitalize">Pay My Buddy</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div>
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/index}">Home</a>
+                            <a class="nav-link" th:href="@{/index}">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/transfer}">Transfer</a>
@@ -39,86 +43,101 @@
             </div>
         </nav>
         <br>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Deposit</li>
-            </ol>
-        </nav>
-        <br>
-        <div class="row">
-            <div class="col-sm-8">
-                <h1>Make a deposit</h1>
-            </div>
-            <div class="col-sm-4 text-right text-primary">
-                <h2>balance: <span th:text="${balance}">0.0</span>€</h2>
+        <div class="container mt-5 p-4">
+            <div class="row bg-light rounded py-3">
+                <div class="col">
+                    <a class="text-primary text-decoration-none" th:href="@{/index}">Home</a>
+                    <span class="text-secondary">/</span>
+                    <span class="text-secondary">Deposit</span></div>
             </div>
         </div>
-        <div th:if="${param.error}" class="alert alert-danger">Deposit failed</div>
-        <div th:if="${param.success}" class="alert alert-success">Deposit done! <a th:href="@{/transfer}">Make a transfer to a buddy? 💸</a></div>
-        <div th:if="${depositError}" class="alert alert-danger">
-            <span th:text="${depositError}">Error message</span>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-sm-8">
-                <p>Reload your PMB balance with your bank account. It's as simple as a national transfer. You can transfer
-                    money to your PMB account only by SEPA transfer and only in euros.
-                </p>
+    </header>
+    <main>
+        <div class="container">
+            <div class="row">
+                <h1 class="col-12 col-md-8">Make a deposit</h1>
+                <h2 class="col-12 col-md-4 text-end text-primary pt-2">balance: <span th:text="${balance}">XXX.XX</span>€</h2>
+            </div>
+            <div th:if="${param.error}" class="alert alert-danger">Deposit failed</div>
+            <div th:if="${param.success}" class="alert alert-success">Deposit done! <a th:href="@{/transfer}">Make a transfer to a buddy? 💸</a></div>
+            <div th:if="${depositError}" class="alert alert-danger">
+                <span th:text="${depositError}">Error message</span>
             </div>
         </div>
-        <br>
-        <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-            <div class="col d-flex align-items-start">
-                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"></use></svg>
-                </div>
-                <div>
-                    <h3 class="fs-2 text-body-emphasis">Step 1</h3>
-                    <p>Log in to your online banking account and save this IBAN.</p>
-                    <p>
-                        <span>FR39 1756 9000 5088 6414 5848 W46</span>
-                        <br>
-                        <span>BIC: FRPAYMYBUDDY</span>
-                    </p>
-                    <i class="bi bi-bank"></i>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="bg-light p-4">Reload your PMB balance with your bank account. It's as simple as a national transfer. You can transfer
+                        money to your PMB account only by SEPA transfer and only in euros.
+                    </div>
                 </div>
             </div>
-            <div class="col d-flex align-items-start">
-                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg class="bi" width="1em" height="1em"><use xlink:href="#cpu-fill"></use></svg>
-                </div>
-                <div>
-                    <h3 class="fs-2 text-body-emphasis">Step 2</h3>
-                    <p>Follow your bank's instructions to complete a transfer.</p>
+            <div class="container">
+                <div class="row gy-4 mt-2">
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">
+                                    <i class="fas fa-university fa-lg"></i>
+                                    <span class="px-1">Step 1</span>
+                                </h5>
+                                <p class="card-text">Log in to your online banking account and save this IBAN.</p>
+                                <p class="card-text">
+                                    <span>FR39 1756 9000 5088 6414 5848 W46</span>
+                                    <br>
+                                    <span>BIC: FRPAYMYBUDDY</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">
+                                    <i class="fas fa-exchange-alt fa-lg"></i>
+                                    <span class="px-1">Step 2</span>
+                                </h5>
+                                <p class="card-text">Follow your bank's instructions to complete a transfer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">
+                                    <i class="fas fa-money-bill-alt fa-lg"></i>
+                                    <span class="px-1">Step 3</span>
+                                </h5>
+                                <p class="card-text">Your money is available.</p>
+                                <p class="card-text">We will send you an email once the money has been credited to your balance. The transfer usually takes a
+                                    few minutes, but can take 1-2 business days depending on your bank.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col d-flex align-items-start">
-                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg class="bi" width="1em" height="1em"><use xlink:href="#tools"></use></svg>
-                </div>
-                <div>
-                    <h3 class="fs-2 text-body-emphasis">Step 3</h3>
-                    <p>Your money is available.</p>
-                    <p>We will send you an email once the money has been credited to your balance. The transfer usually takes a
-                        few minutes, but can take 1-2 business days depending on your bank.
-                    </p>
+
+            <div class="container mt-5">
+                <div class="row alert alert-warning">
+                    <h4 class="text-danger fw-light">⚠️ For test purpose only</h4>
+                    <form method="post" th:action="@{/deposit}" th:object="${depositInfo}" class="form-inline">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group mb-3">
+                                    <input type="text" id="amount" class="form-control" th:field="*{amount}" placeholder="Enter amount of deposit" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-warning">Make deposit</button>
+                                <span class="text-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Invalid amount</span>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        <hr>
-        <h4 class="text-danger">For test purpose only</h4>
-        <form method="post" th:action="@{/deposit}" th:object="${depositInfo}">
-            <label for="amount">Amount</label>
-            <input type="text" id="amount" class="form-control" th:field="*{amount}" placeholder="Enter amount of deposit" />
-            <div class="col-sm-4">
-                <span class="text-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Invalid amount</span>
-            </div>
-            <button type="submit" class="btn btn-primary">Make deposit</button>
-        </form>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -2,31 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width = device-width, initial-scale = 1, shrink-to-fit = no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link th:href="@{/styles/style.css}" rel="stylesheet" />
+
     <title>Pay My Buddy</title>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
+    <header>
+        <nav class="navbar navbar-expand-md bg-white navbar-light fixed-top mt-2">
+            <div class="container">
+                <a class="navbar-brand text-uppercase fw-bold" th:href="@{/index}">
+                    <span class="btn btn-lg logo text-white text-capitalize">Pay My Buddy</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div>
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/index}">Home</a>
+                            <a class="nav-link" th:href="@{/index}">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/transfer}">Transfer</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" th:href="@{/profile}">Profile</a>
+                        <li class="nav-item active">
+                            <a class="nav-link" th:href="@{/profile}"><span class="current">Profile</span></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/contact}">Contact</a>
@@ -39,55 +41,59 @@
             </div>
         </nav>
         <br>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/index}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Profile</li>
-            </ol>
-        </nav>
-        <br>
-        <div class="row">
-            <div class="col-sm-8">
-                <h1>Close account</h1>
+        <div class="container mt-5 p-4">
+            <div class="row bg-light rounded py-3">
+                <div class="col">
+                    <a class="text-primary text-decoration-none" th:href="@{/index}">Home</a>
+                    <span class="text-secondary">/</span>
+                    <span class="text-secondary">Profile</span></div>
             </div>
         </div>
-        <br>
-        <div th:if="${param.error}" class="alert alert-danger">An error occurred.</div>
-        <div th:if="${param.balance}" class="alert alert-danger">Balance must be 0 to close account.</div>
-        <div th:if="${param.success}">
-            <div class="alert alert-success">It's done!</div>
-        </div>
-        <div th:if="${closeProfileError}" class="alert alert-danger">
-            <span th:text="${closeProfileError}">Error message</span>
-        </div>
-
-        <div class="row">
-            <div class="col-4">
-                <ul class="list-group">
-                    <li class="list-group-item"><a th:href="@{/profile}">Profile information</a></li>
-                    <li class="list-group-item"><a th:href="@{/profile_password}">Password</a></li>
-                    <li class="list-group-item list-group-item-primary"><a th:href="@{/profile_close}">Close account</a></li>
-                </ul>
+    </header>
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h1>Close account</h1>
+                </div>
             </div>
-            <div class="col-8">
-                <form method="post" th:action="@{/profile_close}" th:object="${userAccount}">
-                    <div class="col-sm-12">This action is non-reversible. You won't be able to use or access this account anymore.</div>
-                    <div class="col-sm-12">Are you sure? Really sure?</div>
-                    <br>
-                    <div class="col-sm-12">Okay then...</div>
-                    <br>
-                    <div class="form-group row">
-                        <div class="col-sm-4"></div>
-                        <div class="col-sm-8">
-                            <button type="submit" class="btn btn-outline-danger">Delete account</button>
-                        </div>
+            <br>
+            <div th:if="${param.error}" class="alert alert-danger">An error occurred.</div>
+            <div th:if="${param.balance}" class="alert alert-danger">Balance must be 0 to close account.</div>
+            <div th:if="${param.success}">
+                <div class="alert alert-success">It's done!</div>
+            </div>
+            <div th:if="${closeProfileError}" class="alert alert-danger">
+                <span th:text="${closeProfileError}">Error message</span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a th:href="@{/profile}" class="text-decoration-none">Profile information</a></li>
+                        <li class="list-group-item"><a th:href="@{/profile_password}" class="text-decoration-none">Password</a></li>
+                        <li class="list-group-item list-group-item-primary"><a th:href="@{/profile_close}" class="text-decoration-none">Close account</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-7 offset-1">
+                    <div class="bg-light p-4">
+                        <form method="post" th:action="@{/profile_close}" th:object="${userAccount}">
+                            <p>This action is non-reversible. You won't be able to use or access this account anymore.</p>
+                            <p>Are you sure? Really sure?</p>
+                            <br>
+                            <p>Okay then...</p>
+                            <div class="form-group row">
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-outline-danger">⚠️ Delete account ⚠️</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

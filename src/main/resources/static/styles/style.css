@@ -1,0 +1,26 @@
+.logo {
+    background: rgb(96,185,91);
+    background: linear-gradient(90deg, rgba(96,185,91,1) 50%, rgba(148,200,88,1) 100%);
+}
+
+.paymybuddy {
+    background: rgb(96,185,91);
+}
+
+a .current {
+    color: #0275d8;
+}
+
+.login-email {
+    background-image: url('../img/envelope.png');
+    background-position: 10px 16px;
+    background-repeat: no-repeat;
+    padding-left: 35px
+}
+
+.login-password {
+    background-image: url('../img/asterisk.png');
+    background-position: 10px 16px;
+    background-repeat: no-repeat;
+    padding-left: 35px
+}

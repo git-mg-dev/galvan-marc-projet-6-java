@@ -46,7 +46,7 @@ public class OperationService {
                     "Deposit", deposit, chargedAmount, userAccount.getId(),
                     userAccount.getId(), OperationStatus.PROCESSING);
 
-            userAccount.setAccountBalance(userAccount.getAccountBalance() + deposit - chargedAmount);
+            userAccount.setAccountBalance(getFloat2Decimal(userAccount.getAccountBalance() + deposit - chargedAmount));
             userAccount.getOperations().add(operation);
 
             UserAccount savedUser = userRepository.save(userAccount);
@@ -81,7 +81,8 @@ public class OperationService {
     public UserAccount makeTransfer(UserAccount userAccount, float transferAmount, String iban) throws OperationFailedException {
         float chargedAmount = getChargedAmount(transferAmount);
 
-        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && !iban.isEmpty() && transferAmount > 0 ) {
+        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && !iban.isEmpty() &&
+                transferAmount > 0 && transferAmount < userAccount.getAccountBalance()) {
             log.info("Making transfer of " + transferAmount + "€ for user " + userAccount.getId() + " to IBAN " + iban);
 
             //Charged amount is taken from the transfer amount
@@ -90,7 +91,7 @@ public class OperationService {
                     userAccount.getId(), userAccount.getId(), OperationStatus.PROCESSING);
             operation.setIban(iban);
 
-            userAccount.setAccountBalance(0);
+            userAccount.setAccountBalance(getFloat2Decimal(userAccount.getAccountBalance()) - operation.getAmount());
             userAccount.getOperations().add(operation);
 
             UserAccount savedUser = userRepository.save(userAccount);
@@ -144,9 +145,9 @@ public class OperationService {
                     Operation operation = new Operation(new Date(), OperationType.PAYMENT, paymentInfo.getDescription(),
                             paymentAmountFloat, chargedAmount, sender.getId(), recipient.getId(), OperationStatus.PROCESSING);
 
-                    sender.setAccountBalance(sender.getAccountBalance() - paymentAmountFloat - chargedAmount);
+                    sender.setAccountBalance(getFloat2Decimal(sender.getAccountBalance() - paymentAmountFloat - chargedAmount));
                     sender.getOperations().add(operation);
-                    recipient.setAccountBalance(recipient.getAccountBalance() + paymentAmountFloat);
+                    recipient.setAccountBalance(getFloat2Decimal(recipient.getAccountBalance() + paymentAmountFloat));
 
                     UserAccount savedSender = userRepository.save(sender);
                     UserAccount savedRecipient = userRepository.save(recipient);
@@ -188,6 +189,18 @@ public class OperationService {
      */
     public float getChargedAmount(float operationAmount) {
         BigDecimal bigDecimal = new BigDecimal(Float.toString(operationAmount * 0.005f));
+        bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
+
+        return bigDecimal.floatValue();
+    }
+
+    /**
+     * Rounds floats to 2 decimals
+     * @param value to round
+     * @return rounded value
+     */
+    public float getFloat2Decimal(float value) {
+        BigDecimal bigDecimal = new BigDecimal(Float.toString(value));
         bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
 
         return bigDecimal.floatValue();

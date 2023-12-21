@@ -19,36 +19,31 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "/test.properties")
+@Sql(scripts = "/init_db.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class OperationServiceTest {
     @Autowired
     private OperationService operationService;
     @Autowired
     private UserService userService;
 
-    @BeforeAll
-    @Sql("/init_db.sql")
-    public static void reinitDB() {
-        // script executed by @Sql
-    }
-
     @Test
     public void depositTest_OK() throws OperationFailedException {
         // GIVEN
         UserAccount userAccount = userService.findUserByEmail("jrocher@mail.com");
-        float balanceBeforeDeposit = userAccount.getAccountBalance();
         float deposit = 50.0f;
         float chargedAmount = operationService.getChargedAmount(deposit);
+        float expectedBalanceAfterDeposit = operationService.getFloat2Decimal(userAccount.getAccountBalance() + deposit - chargedAmount);
 
         // WHEN
         UserAccount saveUser = operationService.makeDeposit(userAccount, deposit);
 
         // THEN
         assertNotNull(saveUser);
-        assertEquals(balanceBeforeDeposit + deposit - chargedAmount, saveUser.getAccountBalance());
+        assertEquals(expectedBalanceAfterDeposit, saveUser.getAccountBalance());
     }
 
     @Test
-    public void depositTest_WithInvalidAmount_Fail() {
+    public void depositTest_WithInvalidAccount_Fail() {
         // GIVEN
         UserAccount userAccount = userService.findUserByEmail("mr@mail.com");
         float deposit = 50.0f;
@@ -66,8 +61,8 @@ public class OperationServiceTest {
         float chargedAmount = operationService.getChargedAmount(paymentAmount);
         PaymentInfo paymentInfo = new PaymentInfo(recipient.getId(), "Restaurant", (int)paymentAmount);
 
-        float senderBalanceBeforePayment = sender.getAccountBalance();
-        float recipientBalanceBeforePayment = recipient.getAccountBalance();
+        float expectedSenderBalanceAfterPayment = operationService.getFloat2Decimal(sender.getAccountBalance() - paymentAmount - chargedAmount);
+        float expectedRecipientBalanceAfterPayment = operationService.getFloat2Decimal(recipient.getAccountBalance() + paymentAmount);
 
         // WHEN
         UserAccount saveSender = operationService.sendPayment(sender, paymentInfo);
@@ -75,8 +70,8 @@ public class OperationServiceTest {
 
         // THEN
         assertNotNull(saveSender);
-        assertEquals(senderBalanceBeforePayment - paymentAmount - chargedAmount, saveSender.getAccountBalance());
-        assertEquals(recipientBalanceBeforePayment + paymentAmount, saveRecipient.getAccountBalance());
+        assertEquals(expectedSenderBalanceAfterPayment, saveSender.getAccountBalance());
+        assertEquals(expectedRecipientBalanceAfterPayment, saveRecipient.getAccountBalance());
     }
 
     @Test
@@ -109,37 +104,12 @@ public class OperationServiceTest {
     }
 
     @Test
-    public void paymentTest_PaymentFailed_Fail() throws NullUserException, UserNotFountException, PaymentFailedException {
-        //TODO: il faudrait mocker le UserRepository et indiquer qu'il retourne null quand on appelle Save
-        // mais comment l'injecter dans OperationService ?
-        // Hint: https://lkrnac.net/blog/2015/12/mock-spring-bean-v2/
-        /*
-        // GIVEN
-        UserAccount sender = userService.findUserByEmail("pauline.test@mail.com");
-        UserAccount recipient = userService.findUserByEmail("jrocher@mail.com");
-        float paymentAmount = 15.35f;
-        float chargedAmount = paymentAmount * 0.005f;
-        String description = "Restaurant";
-
-        when(operationService.sendPayment(any(), any(), any(), any())).thenReturn(null);
-
-        // WHEN
-        UserAccount saveSender = operationService.sendPayment(sender, recipient.getEmail(), paymentAmount, description);
-        UserAccount saveRecipient = userService.findUserByEmail("jrocher@mail.com");
-
-        // THEN
-        assertNull(saveSender);
-        assertEquals(saveRecipient.getAccountBalance(), recipient.getAccountBalance());*/
-        fail();
-    }
-
-    @Test
     public void transferTest_OK() throws OperationFailedException {
         // GIVEN
         UserAccount userAccount = userService.findUserByEmail("pauline.test@mail.com");
-        float balanceBeforeDeposit = userAccount.getAccountBalance();
         float transferAmount = 50.0f;
         float chargedAmount = operationService.getChargedAmount(transferAmount);
+        float expectedBalanceAfterTransfer = operationService.getFloat2Decimal(userAccount.getAccountBalance() - transferAmount - chargedAmount);
         String iban = "FR8914508000708675176486S61";
 
         // WHEN
@@ -147,7 +117,7 @@ public class OperationServiceTest {
 
         // THEN
         assertNotNull(saveUser);
-        assertEquals(balanceBeforeDeposit - transferAmount - chargedAmount, saveUser.getAccountBalance());
+        assertEquals(expectedBalanceAfterTransfer, saveUser.getAccountBalance());
     }
 
     @Test
@@ -165,11 +135,5 @@ public class OperationServiceTest {
         // WHEN & THEN
         assertThrows(OperationFailedException.class,
                 () -> operationService.makeTransfer(userAccount, 100000.00f, "whatever"));
-    }
-
-    @Test
-    public void transferTest_PaymentFailed_Fail() {
-        //TODO: mocker le userRepository pour que le save retourne null
-        fail();
     }
 }

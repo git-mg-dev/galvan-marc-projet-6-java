@@ -3,24 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link th:href="@{/styles/style.css}" rel="stylesheet" />
+
     <title>Pay My Buddy</title>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <a class="btn btn-success btn-lg text-white" th:href="@{/index}">Pay My Buddy</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
+    <header>
+        <nav class="navbar navbar-expand-md bg-white navbar-light fixed-top mt-2">
+            <div class="container">
+                <a class="navbar-brand text-uppercase fw-bold" th:href="@{/index}">
+                    <span class="btn btn-lg logo text-white text-capitalize">Pay My Buddy</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div>
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" th:href="@{/index}">Home</a>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" th:href="@{/index}"><span class="current">Home</span></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/transfer}">Transfer</a>
@@ -32,62 +34,67 @@
                             <a class="nav-link" th:href="@{/contact}">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" th:href="@{/logout}">Logout</a>
+                            <a class="nav-link" th:href="@{/logout}">Logout</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
         <br>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page">Home</li>
-            </ol>
-        </nav>
-
-        <br>
-
-        <div th:if="${param.error}">
-            <div class="alert alert-danger">An error occurred.</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-8">
-                <h1>Welcome <span th:text="${firstName}">Firstname</span>!</h1>
-            </div>
-            <div class="col-sm-4 text-right text-primary">
-                <h2>balance: <span th:text="${balance}">XXX.XX</span>€</h2>
+        <div class="container mt-5 p-4">
+            <div class="row bg-light rounded py-3">
+                <span class="text-secondary">Home</span>
             </div>
         </div>
-        <br><br>
-        <div class="row">
-            <div class="col-md-8">
-                <h2 class="fw-bold text-body-emphasis">The easyest app to send money to your buddies!</h2>
-                <p class="text-body-secondary">With Pay My Buddy, send money fast and easy to your contacts.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                <p><a th:href="@{/transfer}" class="btn btn-success btn-lg text-white">Pay My Buddy!</a></p>
+    </header>
+    <section>
+        <div class="container">
+            <div th:if="${param.error}">
+                <div class="alert alert-danger">An error occurred.</div>
+            </div>
+            <div class="row">
+                <h1 class="col-12 col-md-8">Welcome <span th:text="${firstName}">Firstname</span>!</h1>
+                <h2 class="col-12 col-md-4 text-end text-primary pt-2">balance: <span th:text="${balance}">XXX.XX</span>€</h2>
+            </div>
+            <br><br>
+            <div class="row bg-light p-4">
+                <h2 class="col-12 col-md-8 fw-bold">The easyest app to send money to your buddies!</h2>
+                <div class="col-12 col-md-8">With Pay My Buddy, send money fast and easy to your contacts.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+                <div class="col-12 col-md-3 offset-1 text-center">
+                    <a class="text-uppercase fw-bold" th:href="@{/transfer}">
+                        <span class="btn btn-lg logo text-white text-capitalize">Pay My Buddy</span>
+                    </a>
+                </div>
             </div>
         </div>
-        <br><br>
-        <!--div class="row">
-            <h3><span th:text="${balance}">146.23€</span> available on your account</h3>
-        </div-->
-        <div class="row row-cols-2">
-            <div class="col">
-                <h4>Need more money to pay your buddies?</h4>
-                <p>You can add money to your balance. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                    laboris nisi ut aliquip ex ea commodo consequat.</p>
-                <a th:href="@{/deposit}" class="btn btn-primary text-white">Make a deposit</a>
-            </div>
-            <div class="col">
-                <h4>Want to get your money back?</h4>
-                <p>You can your money to your bank account. Duis aute irure dolor in reprehenderit in voluptate
-                    velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                <a th:href="@{/send}" class="btn btn-primary text-white">Send money to bank account</a>
+    </section>
+    <section>
+        <div class="container mt-3 p-4">
+            <div class="row gy-4 mt-4">
+                <div class="col-12 col-sm-6 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Need more money to pay your buddies?</h5>
+                            <p class="card-text">You can add money to your balance. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                                laboris nisi ut aliquip ex ea commodo consequat.</p>
+                            <a href="#" class="btn btn-primary" th:href="@{/deposit}">Make a deposit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Want to get your money back?</h5>
+                            <p class="card-text">You can your money to your bank account. Duis aute irure dolor in reprehenderit in voluptate
+                                velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                            <a href="#" class="btn btn-primary" th:href="@{/send}">Send money to bank account</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

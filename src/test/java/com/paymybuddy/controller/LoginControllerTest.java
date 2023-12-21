@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "/test.properties")
+@Sql(scripts = "/init_db.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class LoginControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -48,7 +50,7 @@ public class LoginControllerTest {
 
     @Test
     public void userLoginTest_WithOpenIdConnectToken_OK() throws Exception {
-        mockMvc.perform(get("/")
+        mockMvc.perform(get("/index")
                         .with(oidcLogin()
                                 .idToken(token -> token.claim("email", "openid.connect@gmail.com"))
                                 .authorities(new SimpleGrantedAuthority("ROLE_ENABLED"))))

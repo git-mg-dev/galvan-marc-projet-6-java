@@ -17,17 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "/test.properties")
+@Sql(scripts = "/init_db.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class UserServiceTest {
     @Autowired
     private UserService userService;
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeAll
-    @Sql("/init_db.sql")
-    public static void setDataBase() {
-        // script executed by @Sql
-    }
 
     @Test
     public void findUserByEmailTest_WithExistingEmail_OK() {

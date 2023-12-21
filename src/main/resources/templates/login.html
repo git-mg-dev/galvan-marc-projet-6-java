@@ -1,75 +1,68 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width = device-width, initial-scale = 1, shrink-to-fit = no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link th:href="@{/styles/style.css}" rel="stylesheet" />
+
     <title>Pay My Buddy</title>
 </head>
 <body>
-<div class="container">
-    <h2 class="mt-4">Pay My Buddy</h2>
-    <hr/>
-
-    <div th:if="${param.error}">
-        <div class="alert alert-danger">Invalid Email or Password</div>
-    </div>
-    <div th:if="${param.logout}">
-        <div class="alert alert-success"> You have been logged out.</div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3 class="text-center">Login to Pay My Buddy</h3>
+    <div class="container justify-content-center col-10 col-md-4 my-5">
+        <div th:if="${param.error}">
+            <div class="alert alert-danger">Invalid Email or Password</div>
         </div>
-        <div class="card-body">
-            <form
-                    method="post"
-                    role="form"
-                    th:action="@{/login}"
-                    class="form-horizontal"
-            >
-                <div class="form-group mb-3">
-                    <label for="username" class="control-label"> Email</label>
-                    <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            class="form-control"
-                            placeholder="Enter email address"
-                    />
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="password" class="control-label"> Password</label>
-                    <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="form-control"
-                            placeholder="Enter password"
-                    />
-                </div>
-                <div class="form-group mb-3">
-                    <input type="checkbox" name="remember-me" /> Remember Me
-                </div>
-                <div class="form-group mb-3">
-                    <button type="submit" class="btn btn-primary" >Log in</button>
-                    <span>Not registered? <a th:href="@{/register}">Register here</a></span>
-                </div>
-            </form>
+        <div th:if="${param.logout}">
+            <div class="alert alert-success"> You have been logged out.</div>
         </div>
-        <div class="form-group mb-3 text-center">
-            <a class="btn btn-primary" th:href="@{/oauth2/authorization/google}" role="button">
-                Sign in with Google account
-            </a>
+        <div class="card">
+            <div class="card-body">
+                <div class="row my-4 text-center">
+                    <a class="text-uppercase fw-bold" th:href="@{/index}">
+                        <span class="btn btn-lg logo text-white text-capitalize">Pay My Buddy</span>
+                    </a>
+                </div>
+                <div class="row my-3 p-4">
+                    <form method="post" th:action="@{/login}">
+                        <div class="col-10 mb-5 mx-auto">
+                            <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    class="form-control form-control-lg login-email"
+                                    placeholder="Email"
+                            />
+                        </div>
+
+                        <div class="col-10 mb-5 mx-auto">
+                            <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control form-control-lg login-password"
+                                    placeholder="Password"
+                            />
+                        </div>
+                        <div class="mb-5 text-center">
+                            <input type="checkbox" name="remember-me" id="remember-me" class="form-check-input">
+                            <label class="form-check-label" for="remember-me">Remember Me</label>
+                        </div>
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary col-4">Login</button>
+                        </div>
+                        <div class="col-12 mt-3 text-center">
+                            <span>Not registered? <a th:href="@{/register}">Register here</a></span>
+                        </div>
+                    </form>
+                    <div class="form-group mt-5 text-center">
+                        <a class="btn paymybuddy text-white" th:href="@{/oauth2/authorization/google}" role="button">
+                            Sign in with Google account
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-
-</div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

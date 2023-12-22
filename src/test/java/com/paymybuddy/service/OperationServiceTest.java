@@ -108,8 +108,7 @@ public class OperationServiceTest {
         // GIVEN
         UserAccount userAccount = userService.findUserByEmail("pauline.test@mail.com");
         float transferAmount = 50.0f;
-        float chargedAmount = operationService.getChargedAmount(transferAmount);
-        float expectedBalanceAfterTransfer = operationService.getFloat2Decimal(userAccount.getAccountBalance() - transferAmount - chargedAmount);
+        float expectedBalanceAfterTransfer = operationService.getFloat2Decimal(userAccount.getAccountBalance() - transferAmount); // charged amount is taken from the transfer amount
         String iban = "FR8914508000708675176486S61";
 
         // WHEN

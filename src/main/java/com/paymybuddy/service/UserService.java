@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -65,17 +62,22 @@ public class UserService {
      * Updates user info in database
      * @param userAccount user account to update
      * @param withNewPassword true if the password must be updated too
+     * @param closeAccount set to true to disable user account
      * @return updated user info
      * @throws UserNotFountException if user is not found
      * @throws NullUserException if user is not found
      */
-    public UserAccount updateUserInfo(UserAccount userAccount, boolean withNewPassword) throws UserNotFountException, NullUserException {
-        if(userAccount != null) {
+    public UserAccount updateUserInfo(UserAccount userAccount, boolean withNewPassword, boolean closeAccount) throws UserNotFountException, NullUserException {
+        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED) {
             if (findUserByEmail(userAccount.getEmail()) != null) {
                 log.info("Updating user info for account " + userAccount.getId());
 
                 if(withNewPassword) {
                     userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
+                }
+                if(closeAccount) {
+                    userAccount.setStatus(UserStatus.DISABLED);
+                    userAccount.setDeletionDate(new Date());
                 }
                 return userRepository.save(userAccount);
             } else {
@@ -100,12 +102,18 @@ public class UserService {
      * @throws UserNotFountException if user is not found
      */
     public UserAccount changePassword(UserAccount userAccount, PasswordChange passwordChange) throws NullUserException, WrongPasswordException, UserNotFountException {
-        if(userAccount != null) {
+        if(userAccount != null && passwordChange != null) {
             log.info("Updating user password for account " + userAccount.getId());
 
             if(passwordEncoder.matches(passwordChange.getCurrentPassword(), userAccount.getPassword())) {
-                userAccount.setPassword(passwordChange.getNewPassword());
-                return updateUserInfo(userAccount, true);
+                if(!passwordChange.getNewPassword().isEmpty() && passwordChange.getNewPassword().equals(passwordChange.getConfirmPassword())) {
+                    userAccount.setPassword(passwordChange.getNewPassword());
+                    return updateUserInfo(userAccount, true, false);
+                } else {
+                    String message = "New password and confirmation must be identical";
+                    log.error("Error while updating user password: " + message);
+                    throw new WrongPasswordException(message);
+                }
             } else {
                 String message = "Invalid password";
                 log.error("Error while updating user password: " + message);
@@ -124,11 +132,12 @@ public class UserService {
      * @return the list of operations to display
      */
     public List<OperationDisplay> getPaymentToDisplay(UserAccount userAccount) {
-        List<OperationDisplay> operationDisplays = new ArrayList<>();
+        List<OperationDisplay> result = new ArrayList<>();
 
-        if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED) {
+        if (userAccount != null && userAccount.getStatus() == UserStatus.ENABLED) {
             log.info("Getting payment operations for user " + userAccount.getId());
 
+            // Selecting PAYMENT operations only
             for (Operation operation : userAccount.getOperations()) {
                 if (operation.getOperationType() == OperationType.PAYMENT) {
                     Optional<UserAccount> optionalUserAccount = userRepository.findById(operation.getRecipientId());
@@ -140,12 +149,41 @@ public class UserService {
                                 recipient.getFirstName() + " " + recipient.getLastName(),
                                 operation.getDescription(), Float.toString(operation.getAmount())
                         );
-                        operationDisplays.add(operationDisplay);
+                        result.add(operationDisplay);
                     }
                 }
             }
         }
-        return operationDisplays;
+        Collections.reverse(result);
+        return result;
+    }
+
+    /**
+     * Get a selection of a list of operations
+     * @param operationDisplays
+     * @param offset index of the first item to be returned from the user account operations list
+     * @param listSize size of list to return
+     * @return selection as a list
+     */
+    public List<OperationDisplay> getPaginatedListOfOperations(List<OperationDisplay> operationDisplays, int offset, int listSize) {
+        List<OperationDisplay> result = new ArrayList<>();
+
+        if(operationDisplays != null && !operationDisplays.isEmpty()) {
+            if(offset > operationDisplays.size()) {
+                offset = 0;
+            }
+
+            int endIndex = offset + listSize;
+            if(endIndex > operationDisplays.size()) {
+                endIndex = operationDisplays.size();
+            }
+
+            for(int i = offset ; i < endIndex ; i++) {
+                result.add(operationDisplays.get(i));
+            }
+
+        }
+        return result;
     }
 
     /**

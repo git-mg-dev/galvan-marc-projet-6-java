@@ -1,6 +1,7 @@
 package com.paymybuddy.service;
 
 import com.paymybuddy.exceptions.*;
+import com.paymybuddy.model.PasswordChange;
 import com.paymybuddy.model.RegisterInfo;
 import com.paymybuddy.model.UserAccount;
 import org.junit.jupiter.api.BeforeAll;
@@ -85,7 +86,7 @@ public class UserServiceTest {
         userAccount.setLastName("Harrington");
 
         // WHEN
-        UserAccount savedUser = userService.updateUserInfo(userAccount, false);
+        UserAccount savedUser = userService.updateUserInfo(userAccount, false, false);
 
         // THEN
         assertNotNull(savedUser);
@@ -95,17 +96,17 @@ public class UserServiceTest {
     @Test
     public void updateUserInfo_NullUser_Fail() {
         // WHEN & THEN
-        assertThrows(NullUserException.class, () -> userService.updateUserInfo(null, false));
+        assertThrows(NullUserException.class, () -> userService.updateUserInfo(null, false, false));
     }
 
     @Test
-    public void updatePassword_OK() throws NullUserException, UserNotFountException {
+    public void updatePassword_OK() throws NullUserException, UserNotFountException, WrongPasswordException {
         // GIVEN
         UserAccount userAccount = userService.findUserByEmail("pauline.test@mail.com");
-        userAccount.setPassword("Harrington");
+        PasswordChange passwordChange = new PasswordChange("password", "newPassword", "newPassword");
 
         // WHEN
-        UserAccount savedUser = userService.updateUserInfo(userAccount, true);
+        UserAccount savedUser = userService.changePassword(userAccount, passwordChange);
 
         // THEN
         assertNotNull(savedUser);
@@ -115,7 +116,40 @@ public class UserServiceTest {
     @Test
     public void updatePassword_NullUser_Fail() {
         // WHEN & THEN
-        assertThrows(NullUserException.class, () -> userService.updateUserInfo(null, true));
+        assertThrows(NullUserException.class, () -> userService.changePassword(null, null));
+    }
+
+    @Test
+    public void updatePassword_WrongPassword_Fail() {
+        // GIVEN
+        UserAccount userAccount = userService.findUserByEmail("pauline.test@mail.com");
+        PasswordChange passwordChange = new PasswordChange("whatever", "newPassword", "newPassword");
+
+        // WHEN & THEN
+        assertThrows(WrongPasswordException.class, () -> userService.changePassword(userAccount, passwordChange));
+    }
+
+    @Test
+    public void updatePassword_DifferentNewPasswords_Fail() {
+        // GIVEN
+        UserAccount userAccount = userService.findUserByEmail("pauline.test@mail.com");
+        PasswordChange passwordChange = new PasswordChange("password", "newPassword", "differentPassword");
+
+        // WHEN & THEN
+        assertThrows(WrongPasswordException.class, () -> userService.changePassword(userAccount, passwordChange));
+    }
+
+    @Test
+    public void closeUserAccount_OK() throws UserNotFountException, NullUserException {
+        // GIVEN
+        UserAccount userAccount = userService.findUserByEmail("jrocher@mail.com");
+
+        // WHEN
+        UserAccount savedUser = userService.updateUserInfo(userAccount, false, true);
+
+        // THEN
+        assertNotNull(savedUser);
+        assertEquals(userAccount.getLastName(), savedUser.getLastName());
     }
 
 }

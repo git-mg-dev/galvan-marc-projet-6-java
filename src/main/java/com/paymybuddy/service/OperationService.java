@@ -82,7 +82,7 @@ public class OperationService {
         float chargedAmount = getChargedAmount(transferAmount);
 
         if(userAccount != null && userAccount.getStatus() == UserStatus.ENABLED && !iban.isEmpty() &&
-                transferAmount > 0 && transferAmount < userAccount.getAccountBalance()) {
+                transferAmount > 0 && transferAmount <= userAccount.getAccountBalance()) {
             log.info("Making transfer of " + transferAmount + "€ for user " + userAccount.getId() + " to IBAN " + iban);
 
             //Charged amount is taken from the transfer amount
@@ -91,7 +91,7 @@ public class OperationService {
                     userAccount.getId(), userAccount.getId(), OperationStatus.PROCESSING);
             operation.setIban(iban);
 
-            userAccount.setAccountBalance(getFloat2Decimal(userAccount.getAccountBalance()) - operation.getAmount());
+            userAccount.setAccountBalance(getFloat2Decimal(userAccount.getAccountBalance()) - transferAmount);
             userAccount.getOperations().add(operation);
 
             UserAccount savedUser = userRepository.save(userAccount);

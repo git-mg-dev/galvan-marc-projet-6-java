@@ -52,7 +52,7 @@ public class ProfileController {
                 userAccount.setFirstName(contactDisplay.getFirstName());
                 userAccount.setLastName(contactDisplay.getLastName());
 
-                userAccount = userService.updateUserInfo(userAccount, false);
+                userAccount = userService.updateUserInfo(userAccount, false, false);
                 return "redirect:profile?success";
             } catch (UserNotFountException | NullUserException e) {
                 userAccount = securityService.getUserInfo(user, oidcUser); //refresh user info
@@ -119,9 +119,7 @@ public class ProfileController {
 
         if (userAccount.getAccountBalance() == 0) {
             try {
-                userAccount.setStatus(UserStatus.DISABLED);
-                userAccount.setDeletionDate(new Date());
-                userAccount = userService.updateUserInfo(userAccount, false);
+                userAccount = userService.updateUserInfo(userAccount, false, true);
 
                 log.info("User account " + userAccount.getId() + " has just been disabled");
                 return "redirect:logout";

@@ -4,12 +4,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
+import java.time.InstantSource;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
@@ -58,8 +75,32 @@ public class LoginControllerTest {
     }
 
     @Test
+    public void userLoginTest_WithNewOpenIdConnectToken_OK() throws Exception {
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("email", "newopenid.connect@gmail.com");
+        attributes.put("given_name", "newopenid");
+        attributes.put("family_name", "connect");
+        attributes.put("sub", "111678394972363534681");
+
+        Instant start = Instant.now();
+        Instant end = Instant.now().plus(1, ChronoUnit.HOURS);
+
+        OAuth2User oAuth2User = new DefaultOAuth2User(
+                AuthorityUtils.createAuthorityList("ROLE_ENABLED"),
+                attributes, "email"
+        );
+
+        OidcIdToken oidcIdToken = new OidcIdToken("tokenvalue", start, end, Collections.singletonMap("email", "newopenid.connect@gmail.com"));
+        OidcUserInfo oidcUserInfo = new OidcUserInfo(attributes);
+        OidcUser oidcUser = new DefaultOidcUser(AuthorityUtils.createAuthorityList("ROLE_ENABLED"), oidcIdToken, oidcUserInfo);
+
+        mockMvc.perform(get("/index").with(oidcLogin().oidcUser(oidcUser)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void userLoginTest_WithOpenIdConnectTokenDisabled_Fail() throws Exception {
-        mockMvc.perform(get("/")
+        mockMvc.perform(get("/index")
                         .with(oidcLogin()
                                 .idToken(token -> token.claim("email", "openid.disabled@gmail.com"))
                                 .authorities(new SimpleGrantedAuthority("ROLE_DISABLED"))))

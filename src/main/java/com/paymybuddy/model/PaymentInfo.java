@@ -17,7 +17,8 @@ public class PaymentInfo {
     @NotNull
     @NotEmpty(message = "Description should not be empty")
     private String description;
+    @NotNull(message = "Minimum payment value 1€")
     @Min(value = 1, message = "Minimum payment value 1€")
-    private int amount;
+    private Integer amount;
 
 }

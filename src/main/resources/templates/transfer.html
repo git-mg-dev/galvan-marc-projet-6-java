@@ -87,7 +87,10 @@
                             <span class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Invalid description</span>
                         </div>
                         <div class="col-md-2">
-                            <input id="amount" type="number" class="form-control" placeholder="0" th:field="*{amount}" />
+                             <div class="input-group">
+                                <input id="amount" type="number" class="form-control" placeholder="0" th:field="*{amount}" />
+                                 <span class="input-group-text">€</span>
+                             </div>
                             <span class="text-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Wrong amount</span>
                         </div>
                         <div class="col-md-2">
